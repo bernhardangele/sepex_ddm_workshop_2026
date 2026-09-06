@@ -15,42 +15,42 @@ bibliography: references.bib
 csl: apa.csl
 ---
 
-## Session Overview (30 Minutes) {.dark-bg background-color="#C2002F"}
+## Session overview (30 minutes) {.dark-bg background-color="#FFFFFF"}
 
 ::: {style="background: linear-gradient(135deg, #1F497D, #C2002F); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 25px; font-weight: bold; font-size: 1.15em;"}
-  Hierarchical Drift Diffusion Modeling: From Data to Bayesian Posterior
+  Drift Diffusion Modeling in R with brms & cogmod
 :::
 
-### What We Will Cover:
-1. **The Data & Packages:** Lexical decisions in `rtdists` & getting `cogmod`
-2. **Variables & Design:** Why response coding instead of error coding?
-3. **Model Architecture:** Rationales for fixed & crossed random effects
-4. **Code Walkthrough:** Step-by-step through `fit_ddm_stimulus_coding.R`
-5. **Model Results:** Reading parameters, posterior distributions & credible intervals
-6. **Model Validation:** Posterior Predictive Checks (PPC) & comparison with @wagenmakers2008diffusion
+### What we will cover:
+1. **The data and packages:** Lexical decisions in `rtdists` and getting `cogmod`
+2. **Variables and design:** Response coding or error coding?
+3. **Model architecture:** Setting up fixed and crossed random effects
+4. **Code walkthrough:** Step-by-step through `fit_ddm_stimulus_coding.R`
+5. **Model results:** Reading parameters, posterior distributions, and credible intervals
+6. **Model validation:** Posterior predictive checks (PPC) and comparison with @wagenmakers2008diffusion
 
 ---
 
-## The Dataset: Wagenmakers et al. (2008) {.dark-bg background-color="#1F497D"}
+## The dataset: Wagenmakers et al. (2008) {.dark-bg background-color="#1F497D"}
 
-- We model Experiment 1 from **@wagenmakers2008diffusion** (Lexical Decision Task).
-- **The Task:**
+- We model Experiment 1 from **@wagenmakers2008diffusion** (Lexical Decision Task). This data set was also analyzed in @heathcote2012linear and the brms tutorial by Henrik Singmann [@singmann2017wiener].
+- **The task:**
   - On each trial, participants decide as quickly and accurately as possible whether a letter string is an English **word** (e.g., *TABLE*) or a **nonword** (e.g., *FLORP*).
-- **Participants & Scope:**
+- **Participants and scope:**
   - **17 participants** tested across multiple sessions.
   - **4,780 unique items** (words and nonwords).
   - Over **31,000 total observations** analyzed simultaneously.
-- **Experimental Manipulations:**
+- **Experimental manipulations:**
   1. **Instruction:** Speed vs. Accuracy blocks (within-subjects).
-  2. **Stimulus Type:** Nonwords vs. Words varying in lexical frequency (High, Low, Very Low).
+  2. **Stimulus type:** Nonwords vs. Words varying in lexical frequency (High, Low, Very Low).
 
 ---
 
-## Where to Find the Data & Packages
+## Where to find the data and packages
 
 ::: {.columns}
 ::: {.column width="50%"}
-### 📦 The Dataset (`rtdists`)
+### The dataset (`rtdists`)
 - The raw and censored data are bundled directly inside the **`rtdists`** R package [@singmann2017wiener]:
   ```r
   install.packages("rtdists")
@@ -60,7 +60,7 @@ csl: apa.csl
 :::
 
 ::: {.column width="50%"}
-### 🚀 The `cogmod` Package
+### The `cogmod` package
 - `cogmod` [@makowski2025cogmod] provides custom Stan families and helpers for `brms`.
 - **Where to get it:**
   - GitHub: [github.com/DominiqueMakowski/cogmod](https://github.com/DominiqueMakowski/cogmod)
@@ -74,7 +74,7 @@ csl: apa.csl
 
 ---
 
-## Data Loading & Cleaning: The `censor` Flag
+## Data loading and cleaning: The `censor` flag
 
 The `speed_acc` dataset includes a built-in boolean variable called **`censor`**:
 
@@ -88,7 +88,7 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 
 ::: {.columns}
 ::: {.column width="50%"}
-### Why Trials Are Censored
+### Why trials are censored
 - @wagenmakers2008diffusion and @heathcote2012linear flagged **171 trials (0.5%)**:
   - **Accidental button presses:** Keys outside designated set.
   - **Fast anticipations ($RT < 180$ ms):** Sub-physiological reaction times.
@@ -96,7 +96,7 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 :::
 
 ::: {.column width="50%"}
-### Impact on DDM Fitting
+### Impact on DDM fitting
 - Unfiltered anticipations artificially compress the estimate of non-decision time ($t_0$).
 - Extreme lapses artificially inflate boundary separation ($a$).
 - Filtering `!censor` yields **31,351 clean observations** across all 17 participants.
@@ -105,11 +105,11 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 
 ---
 
-## Dependent Variables: RT & Response Choice
+## Dependent variables: RT and response choice
 
 ::: {.columns}
 ::: {.column width="50%"}
-### 1. Reaction Time (`rt`)
+### 1. Reaction time (`rt`)
 - Reaction time is measured strictly in **seconds** ($0.18 \le RT \le 3.0$ s).
 - **Units are fundamental:**
   - In DDM, scaling time nonlinearly shifts boundary $a$ and drift $\mu$.
@@ -130,32 +130,32 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 
 ---
 
-## Why Response Coding Instead of Error Coding?
+## Why response coding instead of error coding?
 
 ::: {.columns}
 ::: {.column width="50%"}
-### ❌ Accuracy / Error Coding
+### Accuracy / error coding
 - Lower (0) = Correct, Upper (1) = Error.
-- **Data Sparsity:** Accuracy in lexical decisions is ~95%.
+- **Data sparsity:** Accuracy in lexical decisions is ~95%.
 - **95% of data hits Boundary 0**; only 5% hits Boundary 1!
 - Leads to poor estimation of boundary separation ($a$) and non-decision time ($t_0$).
 - Erases physical motor key distinction.
 :::
 
 ::: {.column width="50%"}
-### ✅ Response / Stimulus Coding
+### Response / stimulus coding
 - Lower (0) = Nonword key, Upper (1) = Word key.
-- **Even Split:** ~50/50 distribution of observations ($47\%$ word, $53\%$ nonword).
-- **Meaningful Drift Rate:**
+- **Even split:** ~50/50 distribution of observations ($47\%$ word, $53\%$ nonword).
+- **Meaningful drift rate:**
   - Words accumulate evidence toward 1 ($\mu > 0$).
   - Nonwords accumulate toward 0 ($\mu < 0$).
-- **True Bias ($z$):** Measures physical preference for the "word" key.
+- **True bias ($z$):** Measures physical preference for the "word" key.
 :::
 :::
 
 ---
 
-## Empirical Distributions: Balanced Boundaries
+## Empirical distributions: Balanced boundaries
 
 ```{r}
 #| label: empirical-stim-plot
@@ -201,14 +201,14 @@ ggplot(df_sub, aes(x = rt, fill = factor(response_choice, labels = c("Nonword (0
 
 ---
 
-## Independent Variables & Factor Levels
+## Independent variables and factor levels
 
 Our experimental design incorporates two categorical predictors:
 
-1. **Instruction Condition (`Condition`):**
+1. **Instruction condition (`Condition`):**
    - 2 levels: **`accuracy`** vs. **`speed`** (blocked instructions).
 
-2. **Stimulus Type (`stimulus_type`):**
+2. **Stimulus type (`stimulus_type`):**
    - Raw categories: `high`, `low`, `very_low`, and `nonword`.
    - **Collapsing strategy:** Words with `very_low` and `low` frequency exhibit near-identical lexical access latencies [@wagenmakers2008diffusion].
    - We collapse them into a single level: **`low`**.
@@ -219,23 +219,23 @@ Our experimental design incorporates two categorical predictors:
 
 ---
 
-## Contrast Coding: Orthogonal Helmert & Sum Contrasts
+## Contrast coding: Orthogonal Helmert and sum contrasts
 
 Default dummy coding (`contr.treatment`) distorts the drift intercept and tests arbitrary pairwise comparisons. We apply planned orthogonal contrasts [@schad2020how]:
 
 ::: {.columns}
 ::: {.column width="50%"}
-### Stimulus Type: Helmert Contrasts
+### Stimulus type: Helmert contrasts
 - **Contrast 1 (`Nonword_vs_Word`):**
   - Nonword ($+2$) vs. Words (High = $-1$, Low = $-1$).
-  - Directly measures **Lexical Discrimination**!
+  - Directly measures **lexical discrimination**!
 - **Contrast 2 (`Low_vs_High`):**
   - Low ($+1$) vs. High ($-1$) frequency words.
-  - Measures **Word Frequency Sensitivity**!
+  - Measures **word frequency sensitivity**!
 :::
 
 ::: {.column width="50%"}
-### Condition: Sum Contrast
+### Condition: Sum contrast
 - Accuracy ($+1$) vs. Speed ($-1$).
 - Both factor levels sum to zero:
   $$(+1) + (-1) = 0$$
@@ -245,7 +245,7 @@ Default dummy coding (`contr.treatment`) distorts the drift intercept and tests 
 
 ---
 
-## Why These Fixed and Random Effects?
+## Why these fixed and random effects?
 
 ```r
 f_ddm <- bf(
@@ -262,15 +262,15 @@ f_ddm <- bf(
 
 ::: {.columns}
 ::: {.column width="50%"}
-### Fixed Effects Rationales
-- **Drift Rate ($\mu$):** Accumulation slope depends on stimulus recognizability, modulated by instructions.
+### Fixed effects rationales
+- **Drift rate ($\mu$):** Accumulation slope depends on stimulus recognizability, modulated by instructions.
 - **Boundary ($a$):** Speed-accuracy tradeoff regulates caution threshold.
 - **NDT ($t_0$):** Detects sensory/motor execution differences.
 - **Bias ($z$):** Tests baseline key preference.
 :::
 
 ::: {.column width="50%"}
-### Crossed Random Intercepts
+### Crossed random intercepts
 - **`(1 | Participant)`:** Individual differences in cognitive processing speed.
 - **`(1 | Item)`:** Unique word/nonword difficulty across all 4,780 items.
 - Avoids aggregate $F_1 \times F_2$ ANOVA pitfalls!
@@ -279,7 +279,7 @@ f_ddm <- bf(
 
 ---
 
-## Parameter Link Functions in `cogmod`
+## Parameter link functions in `cogmod`
 
 `cogmod_ddm()` handles parameter bounding via specialized link functions:
 
@@ -291,12 +291,12 @@ f_ddm <- bf(
 | **Bias ($z/a$)** | `logit` | $z = \frac{1}{1 + e^{-\eta}}$ | Strictly bounded in $(0, 1)$ ($0.5 = \text{unbiased}$) |
 
 ::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px; margin-top: 15px; font-size: 0.9em;"}
-  💡 <strong>Why `softplus` for Boundary?</strong> If $\eta > 3$, a log link causes $a = \exp(\eta)$ to explode exponentially. `softplus` behaves linearly for positive values and smoothly approaches zero, ensuring stable HMC sampling!
+  <strong>Why softplus for boundary?</strong> If $\eta > 3$, a log link causes $a = \exp(\eta)$ to explode exponentially. `softplus` behaves linearly for positive values and smoothly approaches zero, ensuring stable HMC sampling!
 :::
 
 ---
 
-## Code Walkthrough: Libraries & Data Preparation
+## Code walkthrough: Libraries and data preparation
 
 ```r
 library(cogmod)
@@ -321,7 +321,7 @@ df <- data_clean %>% droplevels()
 
 ---
 
-## Code Walkthrough: Variables & Contrast Matrices
+## Code walkthrough: Variables and contrast matrices
 
 ```r
 df$response_choice <- ifelse(df$response == "word", 1L, 0L)
@@ -349,7 +349,7 @@ contrasts(df$stimulus_type) <- helmert_mat
 
 ---
 
-## Code Walkthrough: Model Formula Specification
+## Code walkthrough: Model formula specification
 
 ```r
 f_ddm <- bf(
@@ -371,7 +371,7 @@ f_ddm <- bf(
 
 ---
 
-## Code Walkthrough: The Triad of Automation Helpers
+## Code walkthrough: The triad of automation helpers
 
 ```r
 prior_ddm <- cogmod_priors(f_ddm, df)
@@ -398,7 +398,7 @@ Injects custom C++ Stan functions (`cogmod_ddm_lpdf`) into Stan's `functions {}`
 
 ---
 
-## Code Walkthrough: MCMC Sampling & Serialization
+## Code walkthrough: MCMC sampling and serialization
 
 ```r
 model_ddm <- brm(
@@ -427,7 +427,7 @@ qs2::qs_save(model_ddm, here::here("models", "ddm_cogmod_stimulus_coding_model.q
 
 ---
 
-## Reading & Interpreting Model Results
+## Reading and interpreting model results
 
 ::: {style="font-size: 0.58em;"}
 ```{r}
@@ -482,20 +482,20 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 ```
 :::
 
-- **Diagnostic Health:** 0 divergences, all $\hat{R} = 1.00$, Bulk ESS $\ge 1,798$ (superb convergence!).
+- **Diagnostic health:** 0 divergences, all $\hat{R} = 1.00$, Bulk ESS $\ge 1,798$ (superb convergence!).
 
 ---
 
-## Posterior Boundary Separation: Caution Shift
+## Posterior boundary separation: Caution shift
 
 ::: {.columns}
 ::: {.column width="45%"}
-### Decisive Shift in Caution ($a$)
-- **Accuracy Instructions:**
+### Decisive shift in caution ($a$)
+- **Accuracy instructions:**
   $$\text{softplus}(1.112 + 0.426) \approx \mathbf{1.73}$$
-- **Speed Instructions:**
+- **Speed instructions:**
   $$\text{softplus}(1.112 - 0.426) \approx \mathbf{1.09}$$
-- **Key Finding:**
+- **Key finding:**
   - Boundaries are **$58\%$ wider** under accuracy instructions ($95\%$ CrI: $[0.41, 0.44]$).
   - Participants adjust the decision threshold distance to trade speed for accuracy.
 :::
@@ -507,16 +507,16 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ---
 
-## Posterior Drift Rates: Evidence Accumulation
+## Posterior drift rates: Evidence accumulation
 
 ::: {.columns}
 ::: {.column width="45%"}
-### Deconstructing Drift Rates ($\mu$)
+### Deconstructing drift rates ($\mu$)
 1. **Helmert C1 (`Nonword_vs_Word` = $-1.44$):**
    - $95\%$ CrI: $[-1.46, -1.42]$. Nonwords accumulate toward 0, words toward 1!
 2. **Helmert C2 (`Low_vs_High` = $-0.68$):**
    - $95\%$ CrI: $[-0.73, -0.63]$. High-frequency words accumulate evidence faster than low-frequency words.
-3. **Grand Intercept ($\beta_0 = +0.79$):**
+3. **Grand intercept ($\beta_0 = +0.79$):**
    - Positive due to 2:1 category ratio ($\frac{2}{3}\bar{\mu}_{\text{word}} + \frac{1}{3}\mu_{\text{nonword}}$).
 :::
 
@@ -527,16 +527,16 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ---
 
-## Latency, Bias, & Crossed Random Effects
+## Latency, bias, and crossed random effects
 
 ::: {.columns}
 ::: {.column width="45%"}
-### NDT ($t_0$) & Bias ($z$)
+### NDT ($t_0$) and bias ($z$)
 - **Baseline NDT:** $332$ ms ($95\%$ CrI: $[331, 334]$ ms).
 - **Speed vs. Accuracy:** Only a $17$ ms difference!
-- **Starting Point Bias:** $0.506$ (no motor key preference).
+- **Starting point bias:** $0.506$ (no motor key preference).
 
-### Crossed Variances
+### Crossed variances
 - **Item SD ($\sigma_{\text{Item}} = 0.69$):** Pronounced variation in difficulty across words/nonwords.
 - **Participant SD ($\sigma_{\text{Part}} = 0.09$):** Consistent speeds across subjects.
 :::
@@ -548,15 +548,15 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ---
 
-## Model Validation: Posterior Predictive Check (PPC)
+## Model validation: Posterior predictive check (PPC)
 
 ::: {.columns}
 ::: {.column width="40%"}
-### How PPC Validates the DDM
+### How PPC validates the DDM
 - We simulate 50 replicate datasets ($y^{\text{rep}}$) using the posterior draws.
 - **Thick line:** Empirical observed data.
 - **Thin lines:** 20 posterior simulations.
-- **Fit Quality:**
+- **Fit quality:**
   - Accurately captures both boundary peaks, skewness, and tails across all 6 experimental cells!
 - Generated via standalone script:
   `workshop_sepex/run_posterior_predictive_check.R`
@@ -569,29 +569,29 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ---
 
-## Do Our Results Match Wagenmakers et al. (2008)?
+## Do our results match Wagenmakers et al. (2008)?
 
 | Theoretical Dimension | Wagenmakers et al. (2008) Finding | Our Hierarchical DDM Result | Match? |
 | :--- | :--- | :--- | :---: |
-| **Speed vs. Accuracy** | Driven by boundary separation ($a$) | $a$ increases by **$58\%$** under accuracy instructions ($1.09 \to 1.73$) | ✅ **YES** |
-| **Word Frequency** | Selectively drives drift rate ($\mu$) | High frequency speeds drift ($\beta = -0.68, p < .001$); boundary unaffected | ✅ **YES** |
-| **Non-Decision Time** | Minor shift across instructions | Baseline NDT $= 332$ ms; instruction difference is tiny ($17$ ms) | ✅ **YES** |
-| **Key Bias** | Neutral starting point | $z = 0.506$ ($95\%$ CrI: $[0.502, 0.511]$) | ✅ **YES** |
+| **Speed vs. Accuracy** | Driven by boundary separation ($a$) | $a$ increases by **$58\%$** under accuracy instructions ($1.09 \to 1.73$) | **Yes** |
+| **Word Frequency** | Selectively drives drift rate ($\mu$) | High frequency speeds drift ($\beta = -0.68, p < .001$); boundary unaffected | **Yes** |
+| **Non-Decision Time** | Minor shift across instructions | Baseline NDT $= 332$ ms; instruction difference is tiny ($17$ ms) | **Yes** |
+| **Key Bias** | Neutral starting point | $z = 0.506$ ($95\%$ CrI: $[0.502, 0.511]$) | **Yes** |
 
 ::: {style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 12px; border-radius: 6px; font-size: 0.9em; margin-top: 15px;"}
-  🎯 <strong>Conclusion:</strong> Our Bayesian hierarchical model fully reproduces the classic findings while improving upon traditional EZ-diffusion or individual-by-individual fitting by estimating crossed item and participant random effects simultaneously!
+  <strong>Conclusion:</strong> Our Bayesian hierarchical model fully reproduces the classic findings while improving upon traditional EZ-diffusion or individual-by-individual fitting by estimating crossed item and participant random effects simultaneously!
 :::
 
 ---
 
-## Key Takeaways for DDM in Practice
+## Key takeaways for DDM in practice
 
 ::: {style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 18px; border-radius: 6px; font-size: 0.95em;"}
-  **1. Choice Coding:** Use Response Coding ($0 = \text{Nonword}, 1 = \text{Word}$) in 2AFC tasks to ensure balanced boundaries.<br><br>
-  **2. Units Matter:** Always fit reaction times in **seconds** to prevent Stan numerical failure.<br><br>
+  **1. Choice coding:** Use response coding ($0 = \text{Nonword}, 1 = \text{Word}$) in 2AFC tasks to ensure balanced boundaries.<br><br>
+  **2. Units matter:** Always fit reaction times in **seconds** to prevent Stan numerical failure.<br><br>
   **3. Leverage `cogmod`:** Avoid NaN gradients and min-RT cliffs using `cogmod_ddm()`, `cogmod_priors()`, and `cogmod_inits()`.<br><br>
-  **4. Orthogonal Contrasts:** Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs. frequency).<br><br>
-  **5. Separate Fitting from Presentation:** Keep heavy sampling in standalone R scripts and load lightweight summary objects in Quarto.
+  **4. Orthogonal contrasts:** Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs. frequency).<br><br>
+  **5. Separate fitting from presentation:** Keep heavy sampling in standalone R scripts and load lightweight summary objects in Quarto.
 :::
 
 ---
@@ -600,3 +600,4 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ::: {#refs}
 :::
+

@@ -229,47 +229,47 @@ Dr.&nbsp;Bernhard Angele
 
   <p class="date">Tuesday, September 8, 2026</p>
 </section>
-<section id="session-overview-30-minutes" class="slide level2 dark-bg" data-background-color="#C2002F">
-<h2>Session Overview (30 Minutes)</h2>
+<section id="session-overview-30-minutes" class="slide level2 dark-bg" data-background-color="#FFFFFF">
+<h2>Session overview (30 minutes)</h2>
 <div style="background: linear-gradient(135deg, #1F497D, #C2002F); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 25px; font-weight: bold; font-size: 1.15em;">
-<p>Hierarchical Drift Diffusion Modeling: From Data to Bayesian Posterior</p>
+<p>Drift Diffusion Modeling in R with brms &amp; cogmod</p>
 </div>
-<h3 id="what-we-will-cover">What We Will Cover:</h3>
+<h3 id="what-we-will-cover">What we will cover:</h3>
 <ol type="1">
-<li class="fragment"><strong>The Data &amp; Packages:</strong> Lexical decisions in <code>rtdists</code> &amp; getting <code>cogmod</code></li>
-<li class="fragment"><strong>Variables &amp; Design:</strong> Why response coding instead of error coding?</li>
-<li class="fragment"><strong>Model Architecture:</strong> Rationales for fixed &amp; crossed random effects</li>
-<li class="fragment"><strong>Code Walkthrough:</strong> Step-by-step through <code>fit_ddm_stimulus_coding.R</code></li>
-<li class="fragment"><strong>Model Results:</strong> Reading parameters, posterior distributions &amp; credible intervals</li>
-<li class="fragment"><strong>Model Validation:</strong> Posterior Predictive Checks (PPC) &amp; comparison with <span class="citation" data-cites="wagenmakers2008diffusion">Wagenmakers et al. (<a href="#/references" role="doc-biblioref" onclick="">2008</a>)</span></li>
+<li class="fragment"><strong>The data and packages:</strong> Lexical decisions in <code>rtdists</code> and getting <code>cogmod</code></li>
+<li class="fragment"><strong>Variables and design:</strong> Response coding or error coding?</li>
+<li class="fragment"><strong>Model architecture:</strong> Setting up fixed and crossed random effects</li>
+<li class="fragment"><strong>Code walkthrough:</strong> Step-by-step through <code>fit_ddm_stimulus_coding.R</code></li>
+<li class="fragment"><strong>Model results:</strong> Reading parameters, posterior distributions, and credible intervals</li>
+<li class="fragment"><strong>Model validation:</strong> Posterior predictive checks (PPC) and comparison with <span class="citation" data-cites="wagenmakers2008diffusion">Wagenmakers et al. (<a href="#/references" role="doc-biblioref" onclick="">2008</a>)</span></li>
 </ol>
 </section>
 <section id="the-dataset-wagenmakers-et-al.-2008" class="slide level2 dark-bg" data-background-color="#1F497D">
-<h2>The Dataset: Wagenmakers et al.&nbsp;(2008)</h2>
+<h2>The dataset: Wagenmakers et al.&nbsp;(2008)</h2>
 <ul>
-<li class="fragment">We model Experiment 1 from <strong><span class="citation" data-cites="wagenmakers2008diffusion">Wagenmakers et al. (<a href="#/references" role="doc-biblioref" onclick="">2008</a>)</span></strong> (Lexical Decision Task).</li>
-<li class="fragment"><strong>The Task:</strong>
+<li class="fragment">We model Experiment 1 from <strong><span class="citation" data-cites="wagenmakers2008diffusion">Wagenmakers et al. (<a href="#/references" role="doc-biblioref" onclick="">2008</a>)</span></strong> (Lexical Decision Task). This data set was also analyzed in <span class="citation" data-cites="heathcote2012linear">Heathcote &amp; Love (<a href="#/references" role="doc-biblioref" onclick="">2012</a>)</span> and the brms tutorial by Henrik Singmann <span class="citation" data-cites="singmann2017wiener">(<a href="#/references" role="doc-biblioref" onclick="">Singmann, 2017</a>)</span>.</li>
+<li class="fragment"><strong>The task:</strong>
 <ul>
 <li class="fragment">On each trial, participants decide as quickly and accurately as possible whether a letter string is an English <strong>word</strong> (e.g., <em>TABLE</em>) or a <strong>nonword</strong> (e.g., <em>FLORP</em>).</li>
 </ul></li>
-<li class="fragment"><strong>Participants &amp; Scope:</strong>
+<li class="fragment"><strong>Participants and scope:</strong>
 <ul>
 <li class="fragment"><strong>17 participants</strong> tested across multiple sessions.</li>
 <li class="fragment"><strong>4,780 unique items</strong> (words and nonwords).</li>
 <li class="fragment">Over <strong>31,000 total observations</strong> analyzed simultaneously.</li>
 </ul></li>
-<li class="fragment"><strong>Experimental Manipulations:</strong>
+<li class="fragment"><strong>Experimental manipulations:</strong>
 <ol type="1">
 <li class="fragment"><strong>Instruction:</strong> Speed vs.&nbsp;Accuracy blocks (within-subjects).</li>
-<li class="fragment"><strong>Stimulus Type:</strong> Nonwords vs.&nbsp;Words varying in lexical frequency (High, Low, Very Low).</li>
+<li class="fragment"><strong>Stimulus type:</strong> Nonwords vs.&nbsp;Words varying in lexical frequency (High, Low, Very Low).</li>
 </ol></li>
 </ul>
 </section>
-<section id="where-to-find-the-data-packages" class="slide level2">
-<h2>Where to Find the Data &amp; Packages</h2>
+<section id="where-to-find-the-data-and-packages" class="slide level2">
+<h2>Where to find the data and packages</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="the-dataset-rtdists">📦 The Dataset (<code>rtdists</code>)</h3>
+<h3 id="the-dataset-rtdists">The dataset (<code>rtdists</code>)</h3>
 <ul>
 <li class="fragment"><p>The raw and censored data are bundled directly inside the <strong><code>rtdists</code></strong> R package <span class="citation" data-cites="singmann2017wiener">(<a href="#/references" role="doc-biblioref" onclick="">Singmann, 2017</a>)</span>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">install.packages</span>(<span class="st">"rtdists"</span>)</span>
@@ -277,7 +277,7 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><p>Accessible as a ready-to-use data frame <code>speed_acc</code>.</p></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="the-cogmod-package">🚀 The <code>cogmod</code> Package</h3>
+<h3 id="the-cogmod-package">The <code>cogmod</code> package</h3>
 <ul>
 <li class="fragment"><code>cogmod</code> <span class="citation" data-cites="makowski2025cogmod">(<a href="#/references" role="doc-biblioref" onclick="">Makowski, 2025</a>)</span> provides custom Stan families and helpers for <code>brms</code>.</li>
 <li class="fragment"><strong>Where to get it:</strong>
@@ -290,8 +290,8 @@ Dr.&nbsp;Bernhard Angele
 </ul>
 </div></div>
 </section>
-<section id="data-loading-cleaning-the-censor-flag" class="slide level2">
-<h2>Data Loading &amp; Cleaning: The <code>censor</code> Flag</h2>
+<section id="data-loading-and-cleaning-the-censor-flag" class="slide level2">
+<h2>Data loading and cleaning: The <code>censor</code> flag</h2>
 <p>The <code>speed_acc</code> dataset includes a built-in boolean variable called <strong><code>censor</code></strong>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">library</span>(rtdists)</span>
 <span id="cb3-2"><a href=""></a><span class="fu">library</span>(dplyr)</span>
@@ -300,7 +300,7 @@ Dr.&nbsp;Bernhard Angele
 <span id="cb3-5"><a href=""></a>df <span class="ot">&lt;-</span> speed_acc[<span class="sc">!</span>speed_acc<span class="sc">$</span>censor, ] <span class="sc">%&gt;%</span> <span class="fu">droplevels</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="why-trials-are-censored">Why Trials Are Censored</h3>
+<h3 id="why-trials-are-censored">Why trials are censored</h3>
 <ul>
 <li class="fragment"><span class="citation" data-cites="wagenmakers2008diffusion">Wagenmakers et al. (<a href="#/references" role="doc-biblioref" onclick="">2008</a>)</span> and <span class="citation" data-cites="heathcote2012linear">Heathcote &amp; Love (<a href="#/references" role="doc-biblioref" onclick="">2012</a>)</span> flagged <strong>171 trials (0.5%)</strong>:
 <ul>
@@ -310,7 +310,7 @@ Dr.&nbsp;Bernhard Angele
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="impact-on-ddm-fitting">Impact on DDM Fitting</h3>
+<h3 id="impact-on-ddm-fitting">Impact on DDM fitting</h3>
 <ul>
 <li class="fragment">Unfiltered anticipations artificially compress the estimate of non-decision time (<span class="math inline">\(t_0\)</span>).</li>
 <li class="fragment">Extreme lapses artificially inflate boundary separation (<span class="math inline">\(a\)</span>).</li>
@@ -318,11 +318,11 @@ Dr.&nbsp;Bernhard Angele
 </ul>
 </div></div>
 </section>
-<section id="dependent-variables-rt-response-choice" class="slide level2">
-<h2>Dependent Variables: RT &amp; Response Choice</h2>
+<section id="dependent-variables-rt-and-response-choice" class="slide level2">
+<h2>Dependent variables: RT and response choice</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="reaction-time-rt">1. Reaction Time (<code>rt</code>)</h3>
+<h3 id="reaction-time-rt">1. Reaction time (<code>rt</code>)</h3>
 <ul>
 <li class="fragment">Reaction time is measured strictly in <strong>seconds</strong> (<span class="math inline">\(0.18 \le RT \le 3.0\)</span> s).</li>
 <li class="fragment"><strong>Units are fundamental:</strong>
@@ -345,44 +345,44 @@ Dr.&nbsp;Bernhard Angele
 </div></div>
 </section>
 <section id="why-response-coding-instead-of-error-coding" class="slide level2">
-<h2>Why Response Coding Instead of Error Coding?</h2>
+<h2>Why response coding instead of error coding?</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="accuracy-error-coding">❌ Accuracy / Error Coding</h3>
+<h3 id="accuracy-error-coding">Accuracy / error coding</h3>
 <ul>
 <li class="fragment">Lower (0) = Correct, Upper (1) = Error.</li>
-<li class="fragment"><strong>Data Sparsity:</strong> Accuracy in lexical decisions is ~95%.</li>
+<li class="fragment"><strong>Data sparsity:</strong> Accuracy in lexical decisions is ~95%.</li>
 <li class="fragment"><strong>95% of data hits Boundary 0</strong>; only 5% hits Boundary 1!</li>
 <li class="fragment">Leads to poor estimation of boundary separation (<span class="math inline">\(a\)</span>) and non-decision time (<span class="math inline">\(t_0\)</span>).</li>
 <li class="fragment">Erases physical motor key distinction.</li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="response-stimulus-coding">✅ Response / Stimulus Coding</h3>
+<h3 id="response-stimulus-coding">Response / stimulus coding</h3>
 <ul>
 <li class="fragment">Lower (0) = Nonword key, Upper (1) = Word key.</li>
-<li class="fragment"><strong>Even Split:</strong> ~50/50 distribution of observations (<span class="math inline">\(47\%\)</span> word, <span class="math inline">\(53\%\)</span> nonword).</li>
-<li class="fragment"><strong>Meaningful Drift Rate:</strong>
+<li class="fragment"><strong>Even split:</strong> ~50/50 distribution of observations (<span class="math inline">\(47\%\)</span> word, <span class="math inline">\(53\%\)</span> nonword).</li>
+<li class="fragment"><strong>Meaningful drift rate:</strong>
 <ul>
 <li class="fragment">Words accumulate evidence toward 1 (<span class="math inline">\(\mu &gt; 0\)</span>).</li>
 <li class="fragment">Nonwords accumulate toward 0 (<span class="math inline">\(\mu &lt; 0\)</span>).</li>
 </ul></li>
-<li class="fragment"><strong>True Bias (<span class="math inline">\(z\)</span>):</strong> Measures physical preference for the “word” key.</li>
+<li class="fragment"><strong>True bias (<span class="math inline">\(z\)</span>):</strong> Measures physical preference for the “word” key.</li>
 </ul>
 </div></div>
 </section>
 <section id="empirical-distributions-balanced-boundaries" class="slide level2">
-<h2>Empirical Distributions: Balanced Boundaries</h2>
+<h2>Empirical distributions: Balanced boundaries</h2>
 
 <img data-src="drift_diffusion_modeling_files/figure-revealjs/empirical-stim-plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="independent-variables-factor-levels" class="slide level2">
-<h2>Independent Variables &amp; Factor Levels</h2>
+<section id="independent-variables-and-factor-levels" class="slide level2">
+<h2>Independent variables and factor levels</h2>
 <p>Our experimental design incorporates two categorical predictors:</p>
 <ol type="1">
-<li class="fragment"><strong>Instruction Condition (<code>Condition</code>):</strong>
+<li class="fragment"><strong>Instruction condition (<code>Condition</code>):</strong>
 <ul>
 <li class="fragment">2 levels: <strong><code>accuracy</code></strong> vs.&nbsp;<strong><code>speed</code></strong> (blocked instructions).</li>
 </ul></li>
-<li class="fragment"><strong>Stimulus Type (<code>stimulus_type</code>):</strong>
+<li class="fragment"><strong>Stimulus type (<code>stimulus_type</code>):</strong>
 <ul>
 <li class="fragment">Raw categories: <code>high</code>, <code>low</code>, <code>very_low</code>, and <code>nonword</code>.</li>
 <li class="fragment"><strong>Collapsing strategy:</strong> Words with <code>very_low</code> and <code>low</code> frequency exhibit near-identical lexical access latencies <span class="citation" data-cites="wagenmakers2008diffusion">(<a href="#/references" role="doc-biblioref" onclick="">Wagenmakers et al., 2008</a>)</span>.</li>
@@ -396,26 +396,26 @@ Dr.&nbsp;Bernhard Angele
 </ul></li>
 </ol>
 </section>
-<section id="contrast-coding-orthogonal-helmert-sum-contrasts" class="slide level2">
-<h2>Contrast Coding: Orthogonal Helmert &amp; Sum Contrasts</h2>
+<section id="contrast-coding-orthogonal-helmert-and-sum-contrasts" class="slide level2">
+<h2>Contrast coding: Orthogonal Helmert and sum contrasts</h2>
 <p>Default dummy coding (<code>contr.treatment</code>) distorts the drift intercept and tests arbitrary pairwise comparisons. We apply planned orthogonal contrasts <span class="citation" data-cites="schad2020how">(<a href="#/references" role="doc-biblioref" onclick="">Schad et al., 2020</a>)</span>:</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="stimulus-type-helmert-contrasts">Stimulus Type: Helmert Contrasts</h3>
+<h3 id="stimulus-type-helmert-contrasts">Stimulus type: Helmert contrasts</h3>
 <ul>
 <li class="fragment"><strong>Contrast 1 (<code>Nonword_vs_Word</code>):</strong>
 <ul>
 <li class="fragment">Nonword (<span class="math inline">\(+2\)</span>) vs.&nbsp;Words (High = <span class="math inline">\(-1\)</span>, Low = <span class="math inline">\(-1\)</span>).</li>
-<li class="fragment">Directly measures <strong>Lexical Discrimination</strong>!</li>
+<li class="fragment">Directly measures <strong>lexical discrimination</strong>!</li>
 </ul></li>
 <li class="fragment"><strong>Contrast 2 (<code>Low_vs_High</code>):</strong>
 <ul>
 <li class="fragment">Low (<span class="math inline">\(+1\)</span>) vs.&nbsp;High (<span class="math inline">\(-1\)</span>) frequency words.</li>
-<li class="fragment">Measures <strong>Word Frequency Sensitivity</strong>!</li>
+<li class="fragment">Measures <strong>word frequency sensitivity</strong>!</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="condition-sum-contrast">Condition: Sum Contrast</h3>
+<h3 id="condition-sum-contrast">Condition: Sum contrast</h3>
 <ul>
 <li class="fragment">Accuracy (<span class="math inline">\(+1\)</span>) vs.&nbsp;Speed (<span class="math inline">\(-1\)</span>).</li>
 <li class="fragment">Both factor levels sum to zero: <span class="math display">\[(+1) + (-1) = 0\]</span></li>
@@ -424,7 +424,7 @@ Dr.&nbsp;Bernhard Angele
 </div></div>
 </section>
 <section id="why-these-fixed-and-random-effects" class="slide level2">
-<h2>Why These Fixed and Random Effects?</h2>
+<h2>Why these fixed and random effects?</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>f_ddm <span class="ot">&lt;-</span> <span class="fu">bf</span>(</span>
 <span id="cb5-2"><a href=""></a>  rt <span class="sc">|</span> <span class="fu">dec</span>(response_choice) <span class="sc">~</span> stimulus_type <span class="sc">*</span> Condition <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Participant) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item),</span>
 <span id="cb5-3"><a href=""></a>  boundary <span class="sc">~</span> Condition,</span>
@@ -437,15 +437,15 @@ Dr.&nbsp;Bernhard Angele
 <span id="cb5-10"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="fixed-effects-rationales">Fixed Effects Rationales</h3>
+<h3 id="fixed-effects-rationales">Fixed effects rationales</h3>
 <ul>
-<li class="fragment"><strong>Drift Rate (<span class="math inline">\(\mu\)</span>):</strong> Accumulation slope depends on stimulus recognizability, modulated by instructions.</li>
+<li class="fragment"><strong>Drift rate (<span class="math inline">\(\mu\)</span>):</strong> Accumulation slope depends on stimulus recognizability, modulated by instructions.</li>
 <li class="fragment"><strong>Boundary (<span class="math inline">\(a\)</span>):</strong> Speed-accuracy tradeoff regulates caution threshold.</li>
 <li class="fragment"><strong>NDT (<span class="math inline">\(t_0\)</span>):</strong> Detects sensory/motor execution differences.</li>
 <li class="fragment"><strong>Bias (<span class="math inline">\(z\)</span>):</strong> Tests baseline key preference.</li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="crossed-random-intercepts">Crossed Random Intercepts</h3>
+<h3 id="crossed-random-intercepts">Crossed random intercepts</h3>
 <ul>
 <li class="fragment"><strong><code>(1 | Participant)</code>:</strong> Individual differences in cognitive processing speed.</li>
 <li class="fragment"><strong><code>(1 | Item)</code>:</strong> Unique word/nonword difficulty across all 4,780 items.</li>
@@ -454,7 +454,7 @@ Dr.&nbsp;Bernhard Angele
 </div></div>
 </section>
 <section id="parameter-link-functions-in-cogmod" class="slide level2">
-<h2>Parameter Link Functions in <code>cogmod</code></h2>
+<h2>Parameter link functions in <code>cogmod</code></h2>
 <p><code>cogmod_ddm()</code> handles parameter bounding via specialized link functions:</p>
 <table class="caption-top">
 <colgroup>
@@ -499,11 +499,11 @@ Dr.&nbsp;Bernhard Angele
 </tbody>
 </table>
 <div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px; margin-top: 15px; font-size: 0.9em;">
-<p>💡 <strong>Why <code>softplus</code> for Boundary?</strong> If <span class="math inline">\(\eta &gt; 3\)</span>, a log link causes <span class="math inline">\(a = \exp(\eta)\)</span> to explode exponentially. <code>softplus</code> behaves linearly for positive values and smoothly approaches zero, ensuring stable HMC sampling!</p>
+<p><strong>Why softplus for boundary?</strong> If <span class="math inline">\(\eta &gt; 3\)</span>, a log link causes <span class="math inline">\(a = \exp(\eta)\)</span> to explode exponentially. <code>softplus</code> behaves linearly for positive values and smoothly approaches zero, ensuring stable HMC sampling!</p>
 </div>
 </section>
-<section id="code-walkthrough-libraries-data-preparation" class="slide level2">
-<h2>Code Walkthrough: Libraries &amp; Data Preparation</h2>
+<section id="code-walkthrough-libraries-and-data-preparation" class="slide level2">
+<h2>Code walkthrough: Libraries and data preparation</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="fu">library</span>(cogmod)</span>
 <span id="cb6-2"><a href=""></a><span class="fu">library</span>(brms)</span>
 <span id="cb6-3"><a href=""></a><span class="fu">library</span>(cmdstanr)</span>
@@ -524,8 +524,8 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment">We load the dataset and immediately drop censored trials (<code>!speed_acc$censor</code>).</li>
 </ul>
 </section>
-<section id="code-walkthrough-variables-contrast-matrices" class="slide level2">
-<h2>Code Walkthrough: Variables &amp; Contrast Matrices</h2>
+<section id="code-walkthrough-variables-and-contrast-matrices" class="slide level2">
+<h2>Code walkthrough: Variables and contrast matrices</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>df<span class="sc">$</span>response_choice <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>response <span class="sc">==</span> <span class="st">"word"</span>, <span class="dv">1</span>L, <span class="dv">0</span>L)</span>
 <span id="cb7-2"><a href=""></a></span>
 <span id="cb7-3"><a href=""></a>df<span class="sc">$</span>Participant <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>id)</span>
@@ -550,7 +550,7 @@ Dr.&nbsp;Bernhard Angele
 </ul>
 </section>
 <section id="code-walkthrough-model-formula-specification" class="slide level2">
-<h2>Code Walkthrough: Model Formula Specification</h2>
+<h2>Code walkthrough: Model formula specification</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>f_ddm <span class="ot">&lt;-</span> <span class="fu">bf</span>(</span>
 <span id="cb8-2"><a href=""></a>  rt <span class="sc">|</span> <span class="fu">dec</span>(response_choice) <span class="sc">~</span> stimulus_type <span class="sc">*</span> Condition <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Participant) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item),</span>
 <span id="cb8-3"><a href=""></a>  boundary <span class="sc">~</span> Condition,</span>
@@ -569,7 +569,7 @@ Dr.&nbsp;Bernhard Angele
 </ul>
 </section>
 <section id="code-walkthrough-the-triad-of-automation-helpers" class="slide level2">
-<h2>Code Walkthrough: The Triad of Automation Helpers</h2>
+<h2>Code walkthrough: The triad of automation helpers</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>prior_ddm <span class="ot">&lt;-</span> <span class="fu">cogmod_priors</span>(f_ddm, df)</span>
 <span id="cb9-2"><a href=""></a>init_ddm  <span class="ot">&lt;-</span> <span class="fu">cogmod_inits</span>(f_ddm, df)</span>
 <span id="cb9-3"><a href=""></a>sv_ddm    <span class="ot">&lt;-</span> <span class="fu">cogmod_stanvars</span>(f_ddm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -585,8 +585,8 @@ Dr.&nbsp;Bernhard Angele
 <p>Injects custom C++ Stan functions (<code>cogmod_ddm_lpdf</code>) into Stan’s <code>functions {}</code> block for automatic differentiation.</p>
 </div></div>
 </section>
-<section id="code-walkthrough-mcmc-sampling-serialization" class="slide level2">
-<h2>Code Walkthrough: MCMC Sampling &amp; Serialization</h2>
+<section id="code-walkthrough-mcmc-sampling-and-serialization" class="slide level2">
+<h2>Code walkthrough: MCMC sampling and serialization</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>model_ddm <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
 <span id="cb10-2"><a href=""></a>  <span class="at">formula    =</span> f_ddm,</span>
 <span id="cb10-3"><a href=""></a>  <span class="at">data       =</span> df,</span>
@@ -611,8 +611,8 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><strong><code>qs2::qs_save()</code>:</strong> Fast, lossless binary serialization to disk.</li>
 </ul>
 </section>
-<section id="reading-interpreting-model-results" class="slide level2">
-<h2>Reading &amp; Interpreting Model Results</h2>
+<section id="reading-and-interpreting-model-results" class="slide level2">
+<h2>Reading and interpreting model results</h2>
 <div style="font-size: 0.58em;">
 <div class="cell">
 <div class="cell-output-display">
@@ -743,18 +743,18 @@ Dr.&nbsp;Bernhard Angele
 </div>
 </div>
 <ul>
-<li class="fragment"><strong>Diagnostic Health:</strong> 0 divergences, all <span class="math inline">\(\hat{R} = 1.00\)</span>, Bulk ESS <span class="math inline">\(\ge 1,798\)</span> (superb convergence!).</li>
+<li class="fragment"><strong>Diagnostic health:</strong> 0 divergences, all <span class="math inline">\(\hat{R} = 1.00\)</span>, Bulk ESS <span class="math inline">\(\ge 1,798\)</span> (superb convergence!).</li>
 </ul>
 </section>
 <section id="posterior-boundary-separation-caution-shift" class="slide level2">
-<h2>Posterior Boundary Separation: Caution Shift</h2>
+<h2>Posterior boundary separation: Caution shift</h2>
 <div class="columns">
 <div class="column" style="width:45%;">
-<h3 id="decisive-shift-in-caution-a">Decisive Shift in Caution (<span class="math inline">\(a\)</span>)</h3>
+<h3 id="decisive-shift-in-caution-a">Decisive shift in caution (<span class="math inline">\(a\)</span>)</h3>
 <ul>
-<li class="fragment"><strong>Accuracy Instructions:</strong> <span class="math display">\[\text{softplus}(1.112 + 0.426) \approx \mathbf{1.73}\]</span></li>
-<li class="fragment"><strong>Speed Instructions:</strong> <span class="math display">\[\text{softplus}(1.112 - 0.426) \approx \mathbf{1.09}\]</span></li>
-<li class="fragment"><strong>Key Finding:</strong>
+<li class="fragment"><strong>Accuracy instructions:</strong> <span class="math display">\[\text{softplus}(1.112 + 0.426) \approx \mathbf{1.73}\]</span></li>
+<li class="fragment"><strong>Speed instructions:</strong> <span class="math display">\[\text{softplus}(1.112 - 0.426) \approx \mathbf{1.09}\]</span></li>
+<li class="fragment"><strong>Key finding:</strong>
 <ul>
 <li class="fragment">Boundaries are <strong><span class="math inline">\(58\%\)</span> wider</strong> under accuracy instructions (<span class="math inline">\(95\%\)</span> CrI: <span class="math inline">\([0.41, 0.44]\)</span>).</li>
 <li class="fragment">Participants adjust the decision threshold distance to trade speed for accuracy.</li>
@@ -769,10 +769,10 @@ Dr.&nbsp;Bernhard Angele
 </div></div>
 </section>
 <section id="posterior-drift-rates-evidence-accumulation" class="slide level2">
-<h2>Posterior Drift Rates: Evidence Accumulation</h2>
+<h2>Posterior drift rates: Evidence accumulation</h2>
 <div class="columns">
 <div class="column" style="width:45%;">
-<h3 id="deconstructing-drift-rates-mu">Deconstructing Drift Rates (<span class="math inline">\(\mu\)</span>)</h3>
+<h3 id="deconstructing-drift-rates-mu">Deconstructing drift rates (<span class="math inline">\(\mu\)</span>)</h3>
 <ol type="1">
 <li class="fragment"><strong>Helmert C1 (<code>Nonword_vs_Word</code> = <span class="math inline">\(-1.44\)</span>):</strong>
 <ul>
@@ -782,7 +782,7 @@ Dr.&nbsp;Bernhard Angele
 <ul>
 <li class="fragment"><span class="math inline">\(95\%\)</span> CrI: <span class="math inline">\([-0.73, -0.63]\)</span>. High-frequency words accumulate evidence faster than low-frequency words.</li>
 </ul></li>
-<li class="fragment"><strong>Grand Intercept (<span class="math inline">\(\beta_0 = +0.79\)</span>):</strong>
+<li class="fragment"><strong>Grand intercept (<span class="math inline">\(\beta_0 = +0.79\)</span>):</strong>
 <ul>
 <li class="fragment">Positive due to 2:1 category ratio (<span class="math inline">\(\frac{2}{3}\bar{\mu}_{\text{word}} + \frac{1}{3}\mu_{\text{nonword}}\)</span>).</li>
 </ul></li>
@@ -795,17 +795,17 @@ Dr.&nbsp;Bernhard Angele
 </div>
 </div></div>
 </section>
-<section id="latency-bias-crossed-random-effects" class="slide level2">
-<h2>Latency, Bias, &amp; Crossed Random Effects</h2>
+<section id="latency-bias-and-crossed-random-effects" class="slide level2">
+<h2>Latency, bias, and crossed random effects</h2>
 <div class="columns">
 <div class="column" style="width:45%;">
-<h3 id="ndt-t_0-bias-z">NDT (<span class="math inline">\(t_0\)</span>) &amp; Bias (<span class="math inline">\(z\)</span>)</h3>
+<h3 id="ndt-t_0-and-bias-z">NDT (<span class="math inline">\(t_0\)</span>) and bias (<span class="math inline">\(z\)</span>)</h3>
 <ul>
 <li class="fragment"><strong>Baseline NDT:</strong> <span class="math inline">\(332\)</span> ms (<span class="math inline">\(95\%\)</span> CrI: <span class="math inline">\([331, 334]\)</span> ms).</li>
 <li class="fragment"><strong>Speed vs.&nbsp;Accuracy:</strong> Only a <span class="math inline">\(17\)</span> ms difference!</li>
-<li class="fragment"><strong>Starting Point Bias:</strong> <span class="math inline">\(0.506\)</span> (no motor key preference).</li>
+<li class="fragment"><strong>Starting point bias:</strong> <span class="math inline">\(0.506\)</span> (no motor key preference).</li>
 </ul>
-<h3 id="crossed-variances">Crossed Variances</h3>
+<h3 id="crossed-variances">Crossed variances</h3>
 <ul>
 <li class="fragment"><strong>Item SD (<span class="math inline">\(\sigma_{\text{Item}} = 0.69\)</span>):</strong> Pronounced variation in difficulty across words/nonwords.</li>
 <li class="fragment"><strong>Participant SD (<span class="math inline">\(\sigma_{\text{Part}} = 0.09\)</span>):</strong> Consistent speeds across subjects.</li>
@@ -819,15 +819,15 @@ Dr.&nbsp;Bernhard Angele
 </div></div>
 </section>
 <section id="model-validation-posterior-predictive-check-ppc" class="slide level2">
-<h2>Model Validation: Posterior Predictive Check (PPC)</h2>
+<h2>Model validation: Posterior predictive check (PPC)</h2>
 <div class="columns">
 <div class="column" style="width:40%;">
-<h3 id="how-ppc-validates-the-ddm">How PPC Validates the DDM</h3>
+<h3 id="how-ppc-validates-the-ddm">How PPC validates the DDM</h3>
 <ul>
 <li class="fragment">We simulate 50 replicate datasets (<span class="math inline">\(y^{\text{rep}}\)</span>) using the posterior draws.</li>
 <li class="fragment"><strong>Thick line:</strong> Empirical observed data.</li>
 <li class="fragment"><strong>Thin lines:</strong> 20 posterior simulations.</li>
-<li class="fragment"><strong>Fit Quality:</strong>
+<li class="fragment"><strong>Fit quality:</strong>
 <ul>
 <li class="fragment">Accurately captures both boundary peaks, skewness, and tails across all 6 experimental cells!</li>
 </ul></li>
@@ -842,7 +842,7 @@ Dr.&nbsp;Bernhard Angele
 </div></div>
 </section>
 <section id="do-our-results-match-wagenmakers-et-al.-2008" class="slide level2">
-<h2>Do Our Results Match Wagenmakers et al.&nbsp;(2008)?</h2>
+<h2>Do our results match Wagenmakers et al.&nbsp;(2008)?</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 23%">
@@ -863,36 +863,36 @@ Dr.&nbsp;Bernhard Angele
 <td style="text-align: left;"><strong>Speed vs.&nbsp;Accuracy</strong></td>
 <td style="text-align: left;">Driven by boundary separation (<span class="math inline">\(a\)</span>)</td>
 <td style="text-align: left;"><span class="math inline">\(a\)</span> increases by <strong><span class="math inline">\(58\%\)</span></strong> under accuracy instructions (<span class="math inline">\(1.09 \to 1.73\)</span>)</td>
-<td style="text-align: center;">✅ <strong>YES</strong></td>
+<td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Word Frequency</strong></td>
 <td style="text-align: left;">Selectively drives drift rate (<span class="math inline">\(\mu\)</span>)</td>
 <td style="text-align: left;">High frequency speeds drift (<span class="math inline">\(\beta = -0.68, p &lt; .001\)</span>); boundary unaffected</td>
-<td style="text-align: center;">✅ <strong>YES</strong></td>
+<td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Non-Decision Time</strong></td>
 <td style="text-align: left;">Minor shift across instructions</td>
 <td style="text-align: left;">Baseline NDT <span class="math inline">\(= 332\)</span> ms; instruction difference is tiny (<span class="math inline">\(17\)</span> ms)</td>
-<td style="text-align: center;">✅ <strong>YES</strong></td>
+<td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Key Bias</strong></td>
 <td style="text-align: left;">Neutral starting point</td>
 <td style="text-align: left;"><span class="math inline">\(z = 0.506\)</span> (<span class="math inline">\(95\%\)</span> CrI: <span class="math inline">\([0.502, 0.511]\)</span>)</td>
-<td style="text-align: center;">✅ <strong>YES</strong></td>
+<td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 </tbody>
 </table>
 <div style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 12px; border-radius: 6px; font-size: 0.9em; margin-top: 15px;">
-<p>🎯 <strong>Conclusion:</strong> Our Bayesian hierarchical model fully reproduces the classic findings while improving upon traditional EZ-diffusion or individual-by-individual fitting by estimating crossed item and participant random effects simultaneously!</p>
+<p><strong>Conclusion:</strong> Our Bayesian hierarchical model fully reproduces the classic findings while improving upon traditional EZ-diffusion or individual-by-individual fitting by estimating crossed item and participant random effects simultaneously!</p>
 </div>
 </section>
 <section id="key-takeaways-for-ddm-in-practice" class="slide level2">
-<h2>Key Takeaways for DDM in Practice</h2>
+<h2>Key takeaways for DDM in practice</h2>
 <div style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 18px; border-radius: 6px; font-size: 0.95em;">
-<p><strong>1. Choice Coding:</strong> Use Response Coding (<span class="math inline">\(0 = \text{Nonword}, 1 = \text{Word}\)</span>) in 2AFC tasks to ensure balanced boundaries.<br><br> <strong>2. Units Matter:</strong> Always fit reaction times in <strong>seconds</strong> to prevent Stan numerical failure.<br><br> <strong>3. Leverage <code>cogmod</code>:</strong> Avoid NaN gradients and min-RT cliffs using <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code>.<br><br> <strong>4. Orthogonal Contrasts:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs.&nbsp;frequency).<br><br> <strong>5. Separate Fitting from Presentation:</strong> Keep heavy sampling in standalone R scripts and load lightweight summary objects in Quarto.</p>
+<p><strong>1. Choice coding:</strong> Use response coding (<span class="math inline">\(0 = \text{Nonword}, 1 = \text{Word}\)</span>) in 2AFC tasks to ensure balanced boundaries.<br><br> <strong>2. Units matter:</strong> Always fit reaction times in <strong>seconds</strong> to prevent Stan numerical failure.<br><br> <strong>3. Leverage <code>cogmod</code>:</strong> Avoid NaN gradients and min-RT cliffs using <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code>.<br><br> <strong>4. Orthogonal contrasts:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs.&nbsp;frequency).<br><br> <strong>5. Separate fitting from presentation:</strong> Keep heavy sampling in standalone R scripts and load lightweight summary objects in Quarto.</p>
 </div>
 </section>
 <section id="references" class="slide level2 smaller scrollable">

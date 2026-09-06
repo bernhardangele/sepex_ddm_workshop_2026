@@ -1,8 +1,8 @@
 ---
 title: "Drift Diffusion Modeling in R with brms & cogmod"
-subtitle: "Technical Execution, Computational Mechanics & Model Specification"
+subtitle: "It can be done!"
 author: "Dr. Bernhard Angele"
-date: "September 5, 2026"
+date: "September 8, 2026"
 date-format: full
 format:
   revealjs:

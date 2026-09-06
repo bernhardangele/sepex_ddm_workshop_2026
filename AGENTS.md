@@ -78,3 +78,8 @@ The project root [`Makefile`](file:///workspaces/sepex_ddm_workshop_2026/Makefil
 *   `make` or `make presentation`: Renders the Quarto Reveal.js presentation to HTML.
 *   `make serve` or `make webserver`: Starts the Python HTTP server on port 8889.
 *   `make clean`: Removes generated HTML and Quarto cache artifacts.
+
+### 2.8 GitHub Pages Deployment
+A GitHub Actions workflow ([`.github/workflows/deploy-pages.yml`](file:///workspaces/sepex_ddm_workshop_2026/.github/workflows/deploy-pages.yml)) automatically publishes the presentation to GitHub Pages on every push to `main`.
+*   **Repository Setting:** In GitHub repo Settings > Pages, ensure "Source" is set to **GitHub Actions**.
+*   **Root URL Access:** The workflow copies the rendered presentation to `index.html` in the deployed site so the slides are served immediately at the root URL.

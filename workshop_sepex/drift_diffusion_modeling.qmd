@@ -111,9 +111,8 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 ::: {.column width="50%"}
 ### 1. Reaction time (`rt`)
 - Reaction time is measured strictly in **seconds** ($0.18 \le RT \le 3.0$ s).
-- **Units are fundamental:**
-  - In DDM, scaling time nonlinearly shifts boundary $a$ and drift $\mu$.
-  - Passing milliseconds ($500$ instead of $0.5$) crashes Stan approximations.
+- **Don't use milliseconds:**
+  - `cogmod` assumes seconds -- using milliseconds will cause it to fail.
 :::
 
 ::: {.column width="50%"}
@@ -137,15 +136,14 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 ### Accuracy / error coding
 - Lower (0) = Correct, Upper (1) = Error.
 - **Data sparsity:** Accuracy in lexical decisions is ~95%.
-- **95% of data hits Boundary 0**; only 5% hits Boundary 1!
+- **95% of trials end at Boundary 0**; only 5% end at Boundary 1!
 - Leads to poor estimation of boundary separation ($a$) and non-decision time ($t_0$).
-- Erases physical motor key distinction.
 :::
 
 ::: {.column width="50%"}
 ### Response / stimulus coding
 - Lower (0) = Nonword key, Upper (1) = Word key.
-- **Even split:** ~50/50 distribution of observations ($47\%$ word, $53\%$ nonword).
+- **Even split:** ~50/50 distribution of observations.
 - **Meaningful drift rate:**
   - Words accumulate evidence toward 1 ($\mu > 0$).
   - Nonwords accumulate toward 0 ($\mu < 0$).
@@ -210,9 +208,10 @@ Our experimental design incorporates two categorical predictors:
 
 2. **Stimulus type (`stimulus_type`):**
    - Raw categories: `high`, `low`, `very_low`, and `nonword`.
-   - **Collapsing strategy:** Words with `very_low` and `low` frequency exhibit near-identical lexical access latencies [@wagenmakers2008diffusion].
    - We collapse them into a single level: **`low`**.
-   - Resulting 3 parsimonious levels:
+   - This may be questionable, but lowers model complexity.
+   - Homework: Fit a model with all four levels!
+   - Resulting 3 levels:
      - **`nonword`** (pseudowords)
      - **`low`** (low and very low frequency words)
      - **`high`** (high frequency words)

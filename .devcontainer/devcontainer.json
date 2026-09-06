@@ -1,0 +1,33 @@
+{
+  "name": "Analysis in a Box (Rocker)",
+  "image": "bangele1/analysis-in-a-box-rocker:latest",
+  "forwardPorts": [8787, 8889],
+
+  "containerEnv": {
+    "PASSWORD": "mypassword",
+    "CMDSTAN": "/opt/cmdstan/cmdstan-2.39.0"
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "r.rterm.linux": "/usr/local/bin/R",
+        "r.bracketedPaste": true,
+        "r.plot.view": "Two"
+      },
+      "extensions": [
+        "REditorSupport.r",
+        "tamasfe.even-better-toml",
+        "quarto.quarto"
+      ]
+    }
+  },
+
+  "remoteUser": "root",
+
+  // UPDATED COMMAND:
+  // 1. Grants read/write access to the workspaces folder for everyone (fixes permission denied errors)
+  // 2. Creates a symbolic link named 'project' in the RStudio home folder pointing to your repo
+  // 3. Starts the RStudio server
+  "postStartCommand": "chmod -R 777 /workspaces && ln -s /workspaces /home/rstudio/project && /usr/lib/rstudio-server/bin/rserver --server-daemonize=1 --www-port=8787"
+}

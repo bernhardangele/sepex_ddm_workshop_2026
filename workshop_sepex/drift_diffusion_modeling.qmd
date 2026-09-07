@@ -53,10 +53,11 @@ csl: apa.csl
 ### The dataset (`rtdists`)
 - The raw and censored data are bundled directly inside the **`rtdists`** R package [@singmann2017wiener]:
   ```r
-  install.packages("rtdists")
+  pak::pkg_install("rtdists")
   data(speed_acc, package = "rtdists")
   ```
 - Accessible as a ready-to-use data frame `speed_acc`.
+- `pak` automatically resolves and installs any required dependencies.
 :::
 
 ::: {.column width="50%"}
@@ -64,10 +65,9 @@ csl: apa.csl
 - `cogmod` [@makowski2025cogmod] provides custom Stan families and helpers for `brms`.
 - **Where to get it:**
   - GitHub: [github.com/DominiqueMakowski/cogmod](https://github.com/DominiqueMakowski/cogmod)
-  - Install via `pak` or `remotes`:
+  - Install via `pak` (installs dependencies automatically):
   ```r
   pak::pkg_install("DominiqueMakowski/cogmod")
-  # or: remotes::install_github("DominiqueMakowski/cogmod")
   ```
 :::
 :::
@@ -76,7 +76,7 @@ csl: apa.csl
 
 ## Data loading and cleaning: The `censor` flag
 
-The `speed_acc` dataset includes a built-in boolean variable called **`censor`**:
+The `speed_acc` dataset includes a built-in boolean variable called **`censor`** that contains exclusion criteria:
 
 ```r
 library(rtdists)
@@ -88,17 +88,17 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 
 ::: {.columns}
 ::: {.column width="50%"}
-### Why trials are censored
+### Excluded data:
 - @wagenmakers2008diffusion and @heathcote2012linear flagged **171 trials (0.5%)**:
   - **Accidental button presses:** Keys outside designated set.
-  - **Fast anticipations ($RT < 180$ ms):** Sub-physiological reaction times.
-  - **Attentional lapses ($RT > 3.0$ s):** Distraction / mind-wandering.
+  - **Fast responses ($RT < 180$ ms):** Physiologically implausible.
+  - **Late responses ($RT > 3.0$ s):** Distraction?
 :::
 
 ::: {.column width="50%"}
-### Impact on DDM fitting
-- Unfiltered anticipations artificially compress the estimate of non-decision time ($t_0$).
-- Extreme lapses artificially inflate boundary separation ($a$).
+### Impact on DDM
+- Unfiltered fast trials would artificially lower the estimate of non-decision time ($t_0$).
+- Late responses artificially inflate boundary separation ($a$).
 - Filtering `!censor` yields **31,351 clean observations** across all 17 participants.
 :::
 :::
@@ -136,7 +136,7 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 ### Accuracy / error coding
 - Lower (0) = Correct, Upper (1) = Error.
 - **Data sparsity:** Accuracy in lexical decisions is ~95%.
-- **95% of trials end at Boundary 0**; only 5% end at Boundary 1!
+- **95% of trials end at Boundary 0 (correct)**; only 5% end at Boundary 1 (error)
 - Leads to poor estimation of boundary separation ($a$) and non-decision time ($t_0$).
 :::
 
@@ -153,7 +153,7 @@ df <- speed_acc[!speed_acc$censor, ] %>% droplevels()
 
 ---
 
-## Empirical distributions: Balanced boundaries
+## Empirical distributions
 
 ```{r}
 #| label: empirical-stim-plot
@@ -208,7 +208,7 @@ Our experimental design incorporates two categorical predictors:
 
 2. **Stimulus type (`stimulus_type`):**
    - Raw categories: `high`, `low`, `very_low`, and `nonword`.
-   - We collapse them into a single level: **`low`**.
+   - We collapse `low` and `very_low` into a single level: **`low`**.
    - This may be questionable, but lowers model complexity.
    - Homework: Fit a model with all four levels!
    - Resulting 3 levels:
@@ -220,14 +220,14 @@ Our experimental design incorporates two categorical predictors:
 
 ## Contrast coding: Orthogonal Helmert and sum contrasts
 
-Default dummy coding (`contr.treatment`) distorts the drift intercept and tests arbitrary pairwise comparisons. We apply planned orthogonal contrasts [@schad2020how]:
+Default dummy coding (`contr.treatment`) pairwise comparisons against a baseline. We instead apply planned orthogonal contrasts [@schad2020how]:
 
 ::: {.columns}
 ::: {.column width="50%"}
 ### Stimulus type: Helmert contrasts
 - **Contrast 1 (`Nonword_vs_Word`):**
   - Nonword ($+2$) vs. Words (High = $-1$, Low = $-1$).
-  - Directly measures **lexical discrimination**!
+  - Directly measures the effect of **lexical status** (word vs. nonword)
 - **Contrast 2 (`Low_vs_High`):**
   - Low ($+1$) vs. High ($-1$) frequency words.
   - Measures **word frequency sensitivity**!
@@ -262,17 +262,18 @@ f_ddm <- bf(
 ::: {.columns}
 ::: {.column width="50%"}
 ### Fixed effects rationales
-- **Drift rate ($\mu$):** Accumulation slope depends on stimulus recognizability, modulated by instructions.
-- **Boundary ($a$):** Speed-accuracy tradeoff regulates caution threshold.
-- **NDT ($t_0$):** Detects sensory/motor execution differences.
-- **Bias ($z$):** Tests baseline key preference.
+- **Drift rate ($\mu$):** Drift rate depends on ease of processing of stimulus. Sign depends on lexicality.
+- **Boundary ($a$):** Speed-accuracy tradeoff should modify threshold (more speed = boundaries closer together).
+- **NDT ($t_0$):** NDT might account for very early sensory differences.
+- **Bias ($z$):** Is there a bias towards Word/Nonword before seeing the stimulus? Does the speed/accuracy instruction affect this?
 :::
 
 ::: {.column width="50%"}
 ### Crossed random intercepts
-- **`(1 | Participant)`:** Individual differences in cognitive processing speed.
-- **`(1 | Item)`:** Unique word/nonword difficulty across all 4,780 items.
-- Avoids aggregate $F_1 \times F_2$ ANOVA pitfalls!
+- **`(1 | Participant)`:** Individual differences in cognitive processing speed (regardless of condition).
+- **`(1 | Item)`:** Unique word/nonword difficulty across all 4,780 items (regardless of condition).
+- Not the maxiumum random effects structure!
+    - But full structure may be too complex to fit.
 :::
 :::
 
@@ -284,13 +285,13 @@ f_ddm <- bf(
 
 | Parameter | Link Function | Formula | Rationale |
 | :--- | :---: | :---: | :--- |
-| **Drift Rate ($\mu$)** | `identity` | $\mu = \eta$ | Unbounded accumulation ($-\infty, +\infty$) |
-| **Boundary ($a$)** | **`softplus`** | $a = \log(1 + e^{\eta})$ | **Smooth positive gradient!** Avoids log explosions |
+| **Drift Rate ($\mu$)** | `identity` | $\mu = \eta$ | Identity link works since drift rate can be positive or negative ($-\infty, +\infty$) |
+| **Boundary ($a$)** | **`softplus`** | $a = \log(1 + e^{\eta})$ | **Smooth positive gradient!** Avoids numerical issues with log-links. |
 | **Non-decision ($t_0$)** | `log` | $t_0 = e^{\eta}$ | Strictly positive latency ($t_0 > 0$) |
 | **Bias ($z/a$)** | `logit` | $z = \frac{1}{1 + e^{-\eta}}$ | Strictly bounded in $(0, 1)$ ($0.5 = \text{unbiased}$) |
 
 ::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px; margin-top: 15px; font-size: 0.9em;"}
-  <strong>Why softplus for boundary?</strong> If $\eta > 3$, a log link causes $a = \exp(\eta)$ to explode exponentially. `softplus` behaves linearly for positive values and smoothly approaches zero, ensuring stable HMC sampling!
+  <strong>Why softplus for boundary?</strong> If $\eta > 3$, a log link causes $a = \exp(\eta)$ to increase exponentially. `softplus` behaves linearly for positive values and smoothly approaches zero, which helps with sampling.
 :::
 
 ---
@@ -420,9 +421,10 @@ qs2::qs_save(model_ddm, here::here("models", "ddm_cogmod_stimulus_coding_model.q
 ```
 
 ### Explanation:
-- **`threads = threading(2)`:** Multi-threading within each chain cuts wall-clock sampling time in half.
-- **`adapt_delta = 0.95`:** Smaller step size eliminates Neal's Funnel divergences in hierarchical random variances.
-- **`qs2::qs_save()`:** Fast, lossless binary serialization to disk.
+- **`threads = threading(2)`:** If you have sufficient cores, you can speed up sampling a bit by using in-chain parallelization (here: using 2 cores per chain for a total of 8 cores).
+- **`adapt_delta = 0.95`:** Start with low adapt delta (.8) and increase if you see divergent transitions. In this case, there were a few divergent transitions at .8, but none at .95.
+- **`max_treedepth = 12`:** Increase if you see warnings about hitting the maximum tree depth (default is 10). Probably unnecessary here, but it doesn't hurt to increase it.
+- **`qs2::qs_save()`:** This package is faster and produces smaller files than `saveRDS()`.
 
 ---
 
@@ -551,12 +553,14 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ::: {.columns}
 ::: {.column width="40%"}
-### How PPC validates the DDM
+### Validating the DDM with a PPC
 - We simulate 50 replicate datasets ($y^{\text{rep}}$) using the posterior draws.
 - **Thick line:** Empirical observed data.
 - **Thin lines:** 20 posterior simulations.
 - **Fit quality:**
-  - Accurately captures both boundary peaks, skewness, and tails across all 6 experimental cells!
+  - Some conditions are fitted quite well, others deviate somewhat.
+  - Maybe the decision to collapse over low and very low frequency was not ideal?
+  - Could also switch to the 5-parameter DDM with trial-to-trial variability in drift, bias, and NDT.
 - Generated via standalone script:
   `workshop_sepex/run_posterior_predictive_check.R`
 :::
@@ -570,11 +574,11 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ## Do our results match Wagenmakers et al. (2008)?
 
-| Theoretical Dimension | Wagenmakers et al. (2008) Finding | Our Hierarchical DDM Result | Match? |
+| Theoretical Dimension | Wagenmakers et al. (2008) | Our model fit | Match? |
 | :--- | :--- | :--- | :---: |
-| **Speed vs. Accuracy** | Driven by boundary separation ($a$) | $a$ increases by **$58\%$** under accuracy instructions ($1.09 \to 1.73$) | **Yes** |
-| **Word Frequency** | Selectively drives drift rate ($\mu$) | High frequency speeds drift ($\beta = -0.68, p < .001$); boundary unaffected | **Yes** |
-| **Non-Decision Time** | Minor shift across instructions | Baseline NDT $= 332$ ms; instruction difference is tiny ($17$ ms) | **Yes** |
+| **Speed vs. Accuracy** | Instruction affects boundary separation ($a$) | $a$ increases by **$58\%$** under accuracy instructions ($1.09 \to 1.73$) | **Yes** |
+| **Word Frequency** | Selectively affects drift rate ($\mu$) | High frequency increases drift towards "Word" boundary, boundary separation is unaffected | **Yes** |
+| **Non-Decision Time** | Minor shift across instructions | Baseline NDT $= 332$ ms; small difference associated with instruction ($17$ ms) | **Yes** |
 | **Key Bias** | Neutral starting point | $z = 0.506$ ($95\%$ CrI: $[0.502, 0.511]$) | **Yes** |
 
 ::: {style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 12px; border-radius: 6px; font-size: 0.9em; margin-top: 15px;"}
@@ -586,11 +590,11 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 ## Key takeaways for DDM in practice
 
 ::: {style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 18px; border-radius: 6px; font-size: 0.95em;"}
-  **1. Choice coding:** Use response coding ($0 = \text{Nonword}, 1 = \text{Word}$) in 2AFC tasks to ensure balanced boundaries.<br><br>
-  **2. Units matter:** Always fit reaction times in **seconds** to prevent Stan numerical failure.<br><br>
-  **3. Leverage `cogmod`:** Avoid NaN gradients and min-RT cliffs using `cogmod_ddm()`, `cogmod_priors()`, and `cogmod_inits()`.<br><br>
-  **4. Orthogonal contrasts:** Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs. frequency).<br><br>
-  **5. Separate fitting from presentation:** Keep heavy sampling in standalone R scripts and load lightweight summary objects in Quarto.
+  **1. Consider using Docker:** Running brms requires a large number of installed packages plus `cmdrstan` for the most efficient sampling. Installing these in Windows or MacOS can take a while. Using a pre-built Docker image with all dependencies is often the easiest solution.<br><br>
+  **2. Think about how to code the responses:** Use response coding ($0 = \text{Nonword}, 1 = \text{Word}$) in 2AFC tasks to ensure balanced boundaries.<br><br>
+  **3. Think carefully about your model:** Start simple (e.g. with the 4-parameter DDM) and only add complexity if the simpler model fails to capture the data. Think about which fixed and random effects are theoretically sensible to include for which parameter.<br><br>
+  **4. Use `cogmod`**: Using `cogmod_ddm()`, `cogmod_priors()`, and `cogmod_inits()`, you can avoid most MCMC failures. Always fit reaction times in **seconds** or the 
+  **5. Expect long runtimes and always save the fitted model:** Fitting a hierarchical DDM with crossed random effects is computationally expensive. Your script should save the fitted model to disk as soon as it is fitted so that you can load it later for analysis.
 :::
 
 ---

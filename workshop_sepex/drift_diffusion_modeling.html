@@ -272,9 +272,10 @@ Dr.&nbsp;Bernhard Angele
 <h3 id="the-dataset-rtdists">The dataset (<code>rtdists</code>)</h3>
 <ul>
 <li class="fragment"><p>The raw and censored data are bundled directly inside the <strong><code>rtdists</code></strong> R package <span class="citation" data-cites="singmann2017wiener">(<a href="#/references" role="doc-biblioref" onclick="">Singmann, 2017</a>)</span>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">install.packages</span>(<span class="st">"rtdists"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"rtdists"</span>)</span>
 <span id="cb1-2"><a href=""></a><span class="fu">data</span>(speed_acc, <span class="at">package =</span> <span class="st">"rtdists"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 <li class="fragment"><p>Accessible as a ready-to-use data frame <code>speed_acc</code>.</p></li>
+<li class="fragment"><p><code>pak</code> automatically resolves and installs any required dependencies.</p></li>
 </ul>
 </div><div class="column" style="width:50%;">
 <h3 id="the-cogmod-package">The <code>cogmod</code> package</h3>
@@ -283,16 +284,15 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><strong>Where to get it:</strong>
 <ul>
 <li class="fragment">GitHub: <a href="https://github.com/DominiqueMakowski/cogmod">github.com/DominiqueMakowski/cogmod</a></li>
-<li class="fragment">Install via <code>pak</code> or <code>remotes</code>:</li>
+<li class="fragment">Install via <code>pak</code> (installs dependencies automatically):</li>
 </ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"DominiqueMakowski/cogmod"</span>)</span>
-<span id="cb2-2"><a href=""></a><span class="co"># or: remotes::install_github("DominiqueMakowski/cogmod")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>pak<span class="sc">::</span><span class="fu">pkg_install</span>(<span class="st">"DominiqueMakowski/cogmod"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 </ul>
 </div></div>
 </section>
 <section id="data-loading-and-cleaning-the-censor-flag" class="slide level2">
 <h2>Data loading and cleaning: The <code>censor</code> flag</h2>
-<p>The <code>speed_acc</code> dataset includes a built-in boolean variable called <strong><code>censor</code></strong>:</p>
+<p>The <code>speed_acc</code> dataset includes a built-in boolean variable called <strong><code>censor</code></strong> that contains exclusion criteria:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">library</span>(rtdists)</span>
 <span id="cb3-2"><a href=""></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb3-3"><a href=""></a></span>
@@ -300,20 +300,20 @@ Dr.&nbsp;Bernhard Angele
 <span id="cb3-5"><a href=""></a>df <span class="ot">&lt;-</span> speed_acc[<span class="sc">!</span>speed_acc<span class="sc">$</span>censor, ] <span class="sc">%&gt;%</span> <span class="fu">droplevels</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 id="why-trials-are-censored">Why trials are censored</h3>
+<h3 id="excluded-data">Excluded data:</h3>
 <ul>
 <li class="fragment"><span class="citation" data-cites="wagenmakers2008diffusion">Wagenmakers et al. (<a href="#/references" role="doc-biblioref" onclick="">2008</a>)</span> and <span class="citation" data-cites="heathcote2012linear">Heathcote &amp; Love (<a href="#/references" role="doc-biblioref" onclick="">2012</a>)</span> flagged <strong>171 trials (0.5%)</strong>:
 <ul>
 <li class="fragment"><strong>Accidental button presses:</strong> Keys outside designated set.</li>
-<li class="fragment"><strong>Fast anticipations (<span class="math inline">\(RT &lt; 180\)</span> ms):</strong> Sub-physiological reaction times.</li>
-<li class="fragment"><strong>Attentional lapses (<span class="math inline">\(RT &gt; 3.0\)</span> s):</strong> Distraction / mind-wandering.</li>
+<li class="fragment"><strong>Fast responses (<span class="math inline">\(RT &lt; 180\)</span> ms):</strong> Physiologically implausible.</li>
+<li class="fragment"><strong>Late responses (<span class="math inline">\(RT &gt; 3.0\)</span> s):</strong> Distraction?</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<h3 id="impact-on-ddm-fitting">Impact on DDM fitting</h3>
+<h3 id="impact-on-ddm">Impact on DDM</h3>
 <ul>
-<li class="fragment">Unfiltered anticipations artificially compress the estimate of non-decision time (<span class="math inline">\(t_0\)</span>).</li>
-<li class="fragment">Extreme lapses artificially inflate boundary separation (<span class="math inline">\(a\)</span>).</li>
+<li class="fragment">Unfiltered fast trials would artificially lower the estimate of non-decision time (<span class="math inline">\(t_0\)</span>).</li>
+<li class="fragment">Late responses artificially inflate boundary separation (<span class="math inline">\(a\)</span>).</li>
 <li class="fragment">Filtering <code>!censor</code> yields <strong>31,351 clean observations</strong> across all 17 participants.</li>
 </ul>
 </div></div>
@@ -325,10 +325,9 @@ Dr.&nbsp;Bernhard Angele
 <h3 id="reaction-time-rt">1. Reaction time (<code>rt</code>)</h3>
 <ul>
 <li class="fragment">Reaction time is measured strictly in <strong>seconds</strong> (<span class="math inline">\(0.18 \le RT \le 3.0\)</span> s).</li>
-<li class="fragment"><strong>Units are fundamental:</strong>
+<li class="fragment"><strong>Don’t use milliseconds:</strong>
 <ul>
-<li class="fragment">In DDM, scaling time nonlinearly shifts boundary <span class="math inline">\(a\)</span> and drift <span class="math inline">\(\mu\)</span>.</li>
-<li class="fragment">Passing milliseconds (<span class="math inline">\(500\)</span> instead of <span class="math inline">\(0.5\)</span>) crashes Stan approximations.</li>
+<li class="fragment"><code>cogmod</code> assumes seconds – using milliseconds will cause it to fail.</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
@@ -352,15 +351,14 @@ Dr.&nbsp;Bernhard Angele
 <ul>
 <li class="fragment">Lower (0) = Correct, Upper (1) = Error.</li>
 <li class="fragment"><strong>Data sparsity:</strong> Accuracy in lexical decisions is ~95%.</li>
-<li class="fragment"><strong>95% of data hits Boundary 0</strong>; only 5% hits Boundary 1!</li>
+<li class="fragment"><strong>95% of trials end at Boundary 0 (correct)</strong>; only 5% end at Boundary 1 (error)</li>
 <li class="fragment">Leads to poor estimation of boundary separation (<span class="math inline">\(a\)</span>) and non-decision time (<span class="math inline">\(t_0\)</span>).</li>
-<li class="fragment">Erases physical motor key distinction.</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <h3 id="response-stimulus-coding">Response / stimulus coding</h3>
 <ul>
 <li class="fragment">Lower (0) = Nonword key, Upper (1) = Word key.</li>
-<li class="fragment"><strong>Even split:</strong> ~50/50 distribution of observations (<span class="math inline">\(47\%\)</span> word, <span class="math inline">\(53\%\)</span> nonword).</li>
+<li class="fragment"><strong>Even split:</strong> ~50/50 distribution of observations.</li>
 <li class="fragment"><strong>Meaningful drift rate:</strong>
 <ul>
 <li class="fragment">Words accumulate evidence toward 1 (<span class="math inline">\(\mu &gt; 0\)</span>).</li>
@@ -370,8 +368,8 @@ Dr.&nbsp;Bernhard Angele
 </ul>
 </div></div>
 </section>
-<section id="empirical-distributions-balanced-boundaries" class="slide level2">
-<h2>Empirical distributions: Balanced boundaries</h2>
+<section id="empirical-distributions" class="slide level2">
+<h2>Empirical distributions</h2>
 
 <img data-src="drift_diffusion_modeling_files/figure-revealjs/empirical-stim-plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="independent-variables-and-factor-levels" class="slide level2">
@@ -385,9 +383,10 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><strong>Stimulus type (<code>stimulus_type</code>):</strong>
 <ul>
 <li class="fragment">Raw categories: <code>high</code>, <code>low</code>, <code>very_low</code>, and <code>nonword</code>.</li>
-<li class="fragment"><strong>Collapsing strategy:</strong> Words with <code>very_low</code> and <code>low</code> frequency exhibit near-identical lexical access latencies <span class="citation" data-cites="wagenmakers2008diffusion">(<a href="#/references" role="doc-biblioref" onclick="">Wagenmakers et al., 2008</a>)</span>.</li>
 <li class="fragment">We collapse them into a single level: <strong><code>low</code></strong>.</li>
-<li class="fragment">Resulting 3 parsimonious levels:
+<li class="fragment">This may be questionable, but lowers model complexity.</li>
+<li class="fragment">Homework: Fit a model with all four levels!</li>
+<li class="fragment">Resulting 3 levels:
 <ul>
 <li class="fragment"><strong><code>nonword</code></strong> (pseudowords)</li>
 <li class="fragment"><strong><code>low</code></strong> (low and very low frequency words)</li>
@@ -398,7 +397,7 @@ Dr.&nbsp;Bernhard Angele
 </section>
 <section id="contrast-coding-orthogonal-helmert-and-sum-contrasts" class="slide level2">
 <h2>Contrast coding: Orthogonal Helmert and sum contrasts</h2>
-<p>Default dummy coding (<code>contr.treatment</code>) distorts the drift intercept and tests arbitrary pairwise comparisons. We apply planned orthogonal contrasts <span class="citation" data-cites="schad2020how">(<a href="#/references" role="doc-biblioref" onclick="">Schad et al., 2020</a>)</span>:</p>
+<p>Default dummy coding (<code>contr.treatment</code>) pairwise comparisons against a baseline. We instead apply planned orthogonal contrasts <span class="citation" data-cites="schad2020how">(<a href="#/references" role="doc-biblioref" onclick="">Schad et al., 2020</a>)</span>:</p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <h3 id="stimulus-type-helmert-contrasts">Stimulus type: Helmert contrasts</h3>
@@ -406,7 +405,7 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><strong>Contrast 1 (<code>Nonword_vs_Word</code>):</strong>
 <ul>
 <li class="fragment">Nonword (<span class="math inline">\(+2\)</span>) vs.&nbsp;Words (High = <span class="math inline">\(-1\)</span>, Low = <span class="math inline">\(-1\)</span>).</li>
-<li class="fragment">Directly measures <strong>lexical discrimination</strong>!</li>
+<li class="fragment">Directly measures the effect of <strong>lexical status</strong> (word vs.&nbsp;nonword)</li>
 </ul></li>
 <li class="fragment"><strong>Contrast 2 (<code>Low_vs_High</code>):</strong>
 <ul>
@@ -439,17 +438,20 @@ Dr.&nbsp;Bernhard Angele
 <div class="column" style="width:50%;">
 <h3 id="fixed-effects-rationales">Fixed effects rationales</h3>
 <ul>
-<li class="fragment"><strong>Drift rate (<span class="math inline">\(\mu\)</span>):</strong> Accumulation slope depends on stimulus recognizability, modulated by instructions.</li>
-<li class="fragment"><strong>Boundary (<span class="math inline">\(a\)</span>):</strong> Speed-accuracy tradeoff regulates caution threshold.</li>
-<li class="fragment"><strong>NDT (<span class="math inline">\(t_0\)</span>):</strong> Detects sensory/motor execution differences.</li>
-<li class="fragment"><strong>Bias (<span class="math inline">\(z\)</span>):</strong> Tests baseline key preference.</li>
+<li class="fragment"><strong>Drift rate (<span class="math inline">\(\mu\)</span>):</strong> Drift rate depends on ease of processing of stimulus. Sign depends on lexicality.</li>
+<li class="fragment"><strong>Boundary (<span class="math inline">\(a\)</span>):</strong> Speed-accuracy tradeoff should modify threshold (more speed = boundaries closer together).</li>
+<li class="fragment"><strong>NDT (<span class="math inline">\(t_0\)</span>):</strong> NDT might account for very early sensory differences.</li>
+<li class="fragment"><strong>Bias (<span class="math inline">\(z\)</span>):</strong> Is there a bias towards Word/Nonword before seeing the stimulus? Does the speed/accuracy instruction affect this?</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <h3 id="crossed-random-intercepts">Crossed random intercepts</h3>
 <ul>
-<li class="fragment"><strong><code>(1 | Participant)</code>:</strong> Individual differences in cognitive processing speed.</li>
-<li class="fragment"><strong><code>(1 | Item)</code>:</strong> Unique word/nonword difficulty across all 4,780 items.</li>
-<li class="fragment">Avoids aggregate <span class="math inline">\(F_1 \times F_2\)</span> ANOVA pitfalls!</li>
+<li class="fragment"><strong><code>(1 | Participant)</code>:</strong> Individual differences in cognitive processing speed (regardless of condition).</li>
+<li class="fragment"><strong><code>(1 | Item)</code>:</strong> Unique word/nonword difficulty across all 4,780 items (regardless of condition).</li>
+<li class="fragment">Not the maxiumum random effects structure!
+<ul>
+<li class="fragment">But full structure may be too complex to fit.</li>
+</ul></li>
 </ul>
 </div></div>
 </section>
@@ -476,13 +478,13 @@ Dr.&nbsp;Bernhard Angele
 <td style="text-align: left;"><strong>Drift Rate (<span class="math inline">\(\mu\)</span>)</strong></td>
 <td style="text-align: center;"><code>identity</code></td>
 <td style="text-align: center;"><span class="math inline">\(\mu = \eta\)</span></td>
-<td style="text-align: left;">Unbounded accumulation (<span class="math inline">\(-\infty, +\infty\)</span>)</td>
+<td style="text-align: left;">Identity link works since drift rate can be positive or negative (<span class="math inline">\(-\infty, +\infty\)</span>)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Boundary (<span class="math inline">\(a\)</span>)</strong></td>
 <td style="text-align: center;"><strong><code>softplus</code></strong></td>
 <td style="text-align: center;"><span class="math inline">\(a = \log(1 + e^{\eta})\)</span></td>
-<td style="text-align: left;"><strong>Smooth positive gradient!</strong> Avoids log explosions</td>
+<td style="text-align: left;"><strong>Smooth positive gradient!</strong> Avoids numerical issues with log-links.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Non-decision (<span class="math inline">\(t_0\)</span>)</strong></td>
@@ -499,7 +501,7 @@ Dr.&nbsp;Bernhard Angele
 </tbody>
 </table>
 <div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px; margin-top: 15px; font-size: 0.9em;">
-<p><strong>Why softplus for boundary?</strong> If <span class="math inline">\(\eta &gt; 3\)</span>, a log link causes <span class="math inline">\(a = \exp(\eta)\)</span> to explode exponentially. <code>softplus</code> behaves linearly for positive values and smoothly approaches zero, ensuring stable HMC sampling!</p>
+<p><strong>Why softplus for boundary?</strong> If <span class="math inline">\(\eta &gt; 3\)</span>, a log link causes <span class="math inline">\(a = \exp(\eta)\)</span> to increase exponentially. <code>softplus</code> behaves linearly for positive values and smoothly approaches zero, which helps with sampling.</p>
 </div>
 </section>
 <section id="code-walkthrough-libraries-and-data-preparation" class="slide level2">
@@ -606,9 +608,10 @@ Dr.&nbsp;Bernhard Angele
 <span id="cb10-17"><a href=""></a>qs2<span class="sc">::</span><span class="fu">qs_save</span>(model_ddm, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"models"</span>, <span class="st">"ddm_cogmod_stimulus_coding_model.qs"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <h3 id="explanation-3">Explanation:</h3>
 <ul>
-<li class="fragment"><strong><code>threads = threading(2)</code>:</strong> Multi-threading within each chain cuts wall-clock sampling time in half.</li>
-<li class="fragment"><strong><code>adapt_delta = 0.95</code>:</strong> Smaller step size eliminates Neal’s Funnel divergences in hierarchical random variances.</li>
-<li class="fragment"><strong><code>qs2::qs_save()</code>:</strong> Fast, lossless binary serialization to disk.</li>
+<li class="fragment"><strong><code>threads = threading(2)</code>:</strong> If you have sufficient cores, you can speed up sampling a bit by using in-chain parallelization (here: using 2 cores per chain for a total of 8 cores).</li>
+<li class="fragment"><strong><code>adapt_delta = 0.95</code>:</strong> Start with low adapt delta (.8) and increase if you see divergent transitions. In this case, there were a few divergent transitions at .8, but none at .95.</li>
+<li class="fragment"><strong><code>max_treedepth = 12</code>:</strong> Increase if you see warnings about hitting the maximum tree depth (default is 10). Probably unnecessary here, but it doesn’t hurt to increase it.</li>
+<li class="fragment"><strong><code>qs2::qs_save()</code>:</strong> This package is faster and produces smaller files than <code>saveRDS()</code>.</li>
 </ul>
 </section>
 <section id="reading-and-interpreting-model-results" class="slide level2">
@@ -822,14 +825,16 @@ Dr.&nbsp;Bernhard Angele
 <h2>Model validation: Posterior predictive check (PPC)</h2>
 <div class="columns">
 <div class="column" style="width:40%;">
-<h3 id="how-ppc-validates-the-ddm">How PPC validates the DDM</h3>
+<h3 id="validating-the-ddm-with-a-ppc">Validating the DDM with a PPC</h3>
 <ul>
 <li class="fragment">We simulate 50 replicate datasets (<span class="math inline">\(y^{\text{rep}}\)</span>) using the posterior draws.</li>
 <li class="fragment"><strong>Thick line:</strong> Empirical observed data.</li>
 <li class="fragment"><strong>Thin lines:</strong> 20 posterior simulations.</li>
 <li class="fragment"><strong>Fit quality:</strong>
 <ul>
-<li class="fragment">Accurately captures both boundary peaks, skewness, and tails across all 6 experimental cells!</li>
+<li class="fragment">Some conditions are fitted quite well, others deviate somewhat.</li>
+<li class="fragment">Maybe the decision to collapse over low and very low frequency was not ideal?</li>
+<li class="fragment">Could also switch to the 5-parameter DDM with trial-to-trial variability in drift, bias, and NDT.</li>
 </ul></li>
 <li class="fragment">Generated via standalone script: <code>workshop_sepex/run_posterior_predictive_check.R</code></li>
 </ul>
@@ -853,28 +858,28 @@ Dr.&nbsp;Bernhard Angele
 <thead>
 <tr class="header">
 <th style="text-align: left;">Theoretical Dimension</th>
-<th style="text-align: left;">Wagenmakers et al.&nbsp;(2008) Finding</th>
-<th style="text-align: left;">Our Hierarchical DDM Result</th>
+<th style="text-align: left;">Wagenmakers et al.&nbsp;(2008)</th>
+<th style="text-align: left;">Our model fit</th>
 <th style="text-align: center;">Match?</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Speed vs.&nbsp;Accuracy</strong></td>
-<td style="text-align: left;">Driven by boundary separation (<span class="math inline">\(a\)</span>)</td>
+<td style="text-align: left;">Instruction affects boundary separation (<span class="math inline">\(a\)</span>)</td>
 <td style="text-align: left;"><span class="math inline">\(a\)</span> increases by <strong><span class="math inline">\(58\%\)</span></strong> under accuracy instructions (<span class="math inline">\(1.09 \to 1.73\)</span>)</td>
 <td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Word Frequency</strong></td>
-<td style="text-align: left;">Selectively drives drift rate (<span class="math inline">\(\mu\)</span>)</td>
-<td style="text-align: left;">High frequency speeds drift (<span class="math inline">\(\beta = -0.68, p &lt; .001\)</span>); boundary unaffected</td>
+<td style="text-align: left;">Selectively affects drift rate (<span class="math inline">\(\mu\)</span>)</td>
+<td style="text-align: left;">High frequency increases drift towards “Word” boundary, boundary separation is unaffected</td>
 <td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Non-Decision Time</strong></td>
 <td style="text-align: left;">Minor shift across instructions</td>
-<td style="text-align: left;">Baseline NDT <span class="math inline">\(= 332\)</span> ms; instruction difference is tiny (<span class="math inline">\(17\)</span> ms)</td>
+<td style="text-align: left;">Baseline NDT <span class="math inline">\(= 332\)</span> ms; small difference associated with instruction (<span class="math inline">\(17\)</span> ms)</td>
 <td style="text-align: center;"><strong>Yes</strong></td>
 </tr>
 <tr class="even">
@@ -892,7 +897,7 @@ Dr.&nbsp;Bernhard Angele
 <section id="key-takeaways-for-ddm-in-practice" class="slide level2">
 <h2>Key takeaways for DDM in practice</h2>
 <div style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 18px; border-radius: 6px; font-size: 0.95em;">
-<p><strong>1. Choice coding:</strong> Use response coding (<span class="math inline">\(0 = \text{Nonword}, 1 = \text{Word}\)</span>) in 2AFC tasks to ensure balanced boundaries.<br><br> <strong>2. Units matter:</strong> Always fit reaction times in <strong>seconds</strong> to prevent Stan numerical failure.<br><br> <strong>3. Leverage <code>cogmod</code>:</strong> Avoid NaN gradients and min-RT cliffs using <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code>.<br><br> <strong>4. Orthogonal contrasts:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs.&nbsp;frequency).<br><br> <strong>5. Separate fitting from presentation:</strong> Keep heavy sampling in standalone R scripts and load lightweight summary objects in Quarto.</p>
+<p><strong>1. Consider using Docker:</strong> Running brms requires a large number of installed packages plus <code>cmdrstan</code> for the most efficient sampling. Installing these in Windows or MacOS can take a while. Using a pre-built Docker image with all dependencies is often the easiest solution.<br><br> <strong>2. Think about how to code the responses:</strong> Use response coding (<span class="math inline">\(0 = \text{Nonword}, 1 = \text{Word}\)</span>) in 2AFC tasks to ensure balanced boundaries.<br><br> <strong>3. Think carefully about your model:</strong> Start simple (e.g.&nbsp;with the 4-parameter DDM) and only add complexity if the simpler model fails to capture the data. Think about which fixed and random effects are theoretically sensible to include for which parameter.<br><br> <strong>4. Use <code>cogmod</code></strong>: Using <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code>, you can avoid most MCMC failures. Always fit reaction times in <strong>seconds</strong> or the model will fail.<br><br> <strong>5. Think about your contrasts:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs.&nbsp;frequency).<br><br> <strong>6. Expect long runtimes and always save the fitted model:</strong> Fitting a hierarchical DDM with crossed random effects is computationally expensive. Your script should save the fitted model to disk as soon as it is fitted so that you can load it later for analysis.</p>
 </div>
 </section>
 <section id="references" class="slide level2 smaller scrollable">

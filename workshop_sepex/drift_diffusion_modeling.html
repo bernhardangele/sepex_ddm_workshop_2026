@@ -118,7 +118,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="drift_diffusion_modeling_files/libs/revealjs/dist/theme/quarto-221e871ebcaed704597e7b338bddf024.css">
+  <link rel="stylesheet" href="drift_diffusion_modeling_files/libs/revealjs/dist/theme/quarto-bc5427a50cf2976ea38a9ac5e8bcec4b.css">
   <link href="drift_diffusion_modeling_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="drift_diffusion_modeling_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="drift_diffusion_modeling_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -229,8 +229,35 @@ Dr.&nbsp;Bernhard Angele
 
   <p class="date">Tuesday, September 8, 2026</p>
 </section>
-<section id="session-overview-30-minutes" class="slide level2 dark-bg" data-background-color="#FFFFFF">
-<h2>Session overview (30 minutes)</h2>
+<section id="presentation-slides" class="slide level2 dark-bg" data-background-color="#1F497D">
+<h2>Presentation slides</h2>
+<p>Scan the QR code or visit the link to follow along on your own device:</p>
+<div class="columns">
+<div class="column" style="width:45%;">
+<div style="text-align: center;">
+<p><img data-src="images/qr_presentation.png" style="background: white; padding: 12px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" width="280" height="280"></p>
+</div>
+</div><div class="column" style="width:55%;">
+<div style="font-size: 0.85em; text-align: left; padding-top: 15px;">
+<p>
+<strong>Interactive presentation on GitHub Pages:</strong>
+</p>
+<p style="margin-top: 15px;">
+<a href="https://bernhardangele.github.io/sepex_ddm_workshop_2026/" target="_blank" style="color: #EEECE1; font-weight: bold; text-decoration: underline; font-size: 0.95em; word-break: break-all;">https://bernhardangele.github.io/sepex_ddm_workshop_2026/</a>
+</p>
+<ul style="margin-top: 20px; font-size: 0.9em; color: #FBFBFA;">
+<li>
+Interactive slides with zoomable plots &amp; code
+</li>
+<li>
+Accessible on smartphones, tablets, and laptops
+</li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="session-overview" class="slide level2 dark-bg" data-background-color="#FFFFFF">
+<h2>Session overview</h2>
 <div style="background: linear-gradient(135deg, #1F497D, #C2002F); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 25px; font-weight: bold; font-size: 1.15em;">
 <p>Drift Diffusion Modeling in R with brms &amp; cogmod</p>
 </div>
@@ -383,7 +410,7 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><strong>Stimulus type (<code>stimulus_type</code>):</strong>
 <ul>
 <li class="fragment">Raw categories: <code>high</code>, <code>low</code>, <code>very_low</code>, and <code>nonword</code>.</li>
-<li class="fragment">We collapse them into a single level: <strong><code>low</code></strong>.</li>
+<li class="fragment">We collapse <code>low</code> and <code>very_low</code> into a single level: <strong><code>low</code></strong>.</li>
 <li class="fragment">This may be questionable, but lowers model complexity.</li>
 <li class="fragment">Homework: Fit a model with all four levels!</li>
 <li class="fragment">Resulting 3 levels:
@@ -424,16 +451,15 @@ Dr.&nbsp;Bernhard Angele
 </section>
 <section id="why-these-fixed-and-random-effects" class="slide level2">
 <h2>Why these fixed and random effects?</h2>
+<div style="font-size: 0.82em;">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>f_ddm <span class="ot">&lt;-</span> <span class="fu">bf</span>(</span>
 <span id="cb5-2"><a href=""></a>  rt <span class="sc">|</span> <span class="fu">dec</span>(response_choice) <span class="sc">~</span> stimulus_type <span class="sc">*</span> Condition <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Participant) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item),</span>
 <span id="cb5-3"><a href=""></a>  boundary <span class="sc">~</span> Condition,</span>
 <span id="cb5-4"><a href=""></a>  ndt <span class="sc">~</span> Condition,</span>
 <span id="cb5-5"><a href=""></a>  bias <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb5-6"><a href=""></a>  <span class="at">sigmadrift =</span> <span class="dv">0</span>,</span>
-<span id="cb5-7"><a href=""></a>  <span class="at">sigmabias =</span> <span class="dv">0</span>,</span>
-<span id="cb5-8"><a href=""></a>  <span class="at">sigmandt =</span> <span class="dv">0</span>,</span>
-<span id="cb5-9"><a href=""></a>  <span class="at">family =</span> <span class="fu">cogmod_ddm</span>()</span>
-<span id="cb5-10"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-6"><a href=""></a>  <span class="at">sigmadrift =</span> <span class="dv">0</span>, <span class="at">sigmabias =</span> <span class="dv">0</span>, <span class="at">sigmandt =</span> <span class="dv">0</span>,</span>
+<span id="cb5-7"><a href=""></a>  <span class="at">family =</span> <span class="fu">cogmod_ddm</span>()</span>
+<span id="cb5-8"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="columns">
 <div class="column" style="width:50%;">
 <h3 id="fixed-effects-rationales">Fixed effects rationales</h3>
@@ -441,23 +467,25 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment"><strong>Drift rate (<span class="math inline">\(\mu\)</span>):</strong> Drift rate depends on ease of processing of stimulus. Sign depends on lexicality.</li>
 <li class="fragment"><strong>Boundary (<span class="math inline">\(a\)</span>):</strong> Speed-accuracy tradeoff should modify threshold (more speed = boundaries closer together).</li>
 <li class="fragment"><strong>NDT (<span class="math inline">\(t_0\)</span>):</strong> NDT might account for very early sensory differences.</li>
-<li class="fragment"><strong>Bias (<span class="math inline">\(z\)</span>):</strong> Is there a bias towards Word/Nonword before seeing the stimulus? Does the speed/accuracy instruction affect this?</li>
+<li class="fragment"><strong>Bias/Starting point (<span class="math inline">\(z\)</span>):</strong> Is there a bias towards Word/Nonword before seeing the stimulus?</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <h3 id="crossed-random-intercepts">Crossed random intercepts</h3>
 <ul>
 <li class="fragment"><strong><code>(1 | Participant)</code>:</strong> Individual differences in cognitive processing speed (regardless of condition).</li>
 <li class="fragment"><strong><code>(1 | Item)</code>:</strong> Unique word/nonword difficulty across all 4,780 items (regardless of condition).</li>
-<li class="fragment">Not the maxiumum random effects structure!
+<li class="fragment">Not the maximum random effects structure!
 <ul>
 <li class="fragment">But full structure may be too complex to fit.</li>
 </ul></li>
 </ul>
 </div></div>
+</div>
 </section>
-<section id="parameter-link-functions-in-cogmod" class="slide level2">
-<h2>Parameter link functions in <code>cogmod</code></h2>
+<section id="parameter-link-functions-drift-rate-and-boundary" class="slide level2">
+<h2>Parameter link functions: Drift rate and boundary</h2>
 <p><code>cogmod_ddm()</code> handles parameter bounding via specialized link functions:</p>
+<div style="font-size: 0.75em;">
 <table class="caption-top">
 <colgroup>
 <col style="width: 22%">
@@ -478,47 +506,122 @@ Dr.&nbsp;Bernhard Angele
 <td style="text-align: left;"><strong>Drift Rate (<span class="math inline">\(\mu\)</span>)</strong></td>
 <td style="text-align: center;"><code>identity</code></td>
 <td style="text-align: center;"><span class="math inline">\(\mu = \eta\)</span></td>
-<td style="text-align: left;">Identity link works since drift rate can be positive or negative (<span class="math inline">\(-\infty, +\infty\)</span>)</td>
+<td style="text-align: left;">Allows accumulation slope to be positive or negative (<span class="math inline">\(-\infty, +\infty\)</span>) depending on lexical status</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Boundary (<span class="math inline">\(a\)</span>)</strong></td>
 <td style="text-align: center;"><strong><code>softplus</code></strong></td>
 <td style="text-align: center;"><span class="math inline">\(a = \log(1 + e^{\eta})\)</span></td>
-<td style="text-align: left;"><strong>Smooth positive gradient!</strong> Avoids numerical issues with log-links.</td>
+<td style="text-align: left;"><strong>Smooth positive gradient!</strong> Strictly positive (<span class="math inline">\(a &gt; 0\)</span>) while avoiding exponential explosion</td>
 </tr>
+</tbody>
+</table>
+</div>
+<div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px; margin-top: 20px; font-size: 0.85em;">
+<p><strong>Why softplus for boundary?</strong> If <span class="math inline">\(\eta &gt; 3\)</span>, a traditional log link causes <span class="math inline">\(a = \exp(\eta)\)</span> to grow exponentially and reach very large values. <code>softplus</code> behaves linearly for positive values and smoothly approaches zero, preventing numerical instability and divergent transitions during HMC sampling.</p>
+</div>
+</section>
+<section id="parameter-link-functions-non-decision-time-and-bias" class="slide level2">
+<h2>Parameter link functions: Non-decision time and bias</h2>
+<p><code>cogmod_ddm()</code> also constrains non-decision latency and response bias:</p>
+<div style="font-size: 0.75em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: center;">Link Function</th>
+<th style="text-align: center;">Formula</th>
+<th style="text-align: left;">Rationale</th>
+</tr>
+</thead>
+<tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Non-decision (<span class="math inline">\(t_0\)</span>)</strong></td>
 <td style="text-align: center;"><code>log</code></td>
 <td style="text-align: center;"><span class="math inline">\(t_0 = e^{\eta}\)</span></td>
-<td style="text-align: left;">Strictly positive latency (<span class="math inline">\(t_0 &gt; 0\)</span>)</td>
+<td style="text-align: left;">Strictly positive latency (<span class="math inline">\(t_0 &gt; 0\)</span>); captures sensory encoding and motor execution</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Bias (<span class="math inline">\(z/a\)</span>)</strong></td>
 <td style="text-align: center;"><code>logit</code></td>
 <td style="text-align: center;"><span class="math inline">\(z = \frac{1}{1 + e^{-\eta}}\)</span></td>
-<td style="text-align: left;">Strictly bounded in <span class="math inline">\((0, 1)\)</span> (<span class="math inline">\(0.5 = \text{unbiased}\)</span>)</td>
+<td style="text-align: left;">Strictly bounded in <span class="math inline">\((0, 1)\)</span>; <span class="math inline">\(0.5\)</span> represents an unbiased starting point</td>
 </tr>
 </tbody>
 </table>
-<div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px; margin-top: 15px; font-size: 0.9em;">
-<p><strong>Why softplus for boundary?</strong> If <span class="math inline">\(\eta &gt; 3\)</span>, a log link causes <span class="math inline">\(a = \exp(\eta)\)</span> to increase exponentially. <code>softplus</code> behaves linearly for positive values and smoothly approaches zero, which helps with sampling.</p>
+</div>
+<div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px; margin-top: 20px; font-size: 0.85em;">
+<p><strong>Automatic boundary enforcement:</strong> Custom link functions in <code>brms</code> allow standard additive linear predictors (<span class="math inline">\(\eta = X\beta\)</span>) while ensuring all sampled parameters strictly respect biological and physical boundary conditions.</p>
+</div>
+</section>
+<section id="the-outlier-mixture-component" class="slide level2">
+<h2>The outlier mixture component</h2>
+<p>In this mixture framework, trials are <strong>not deterministically classified</strong> during model fitting. Instead, the model treats outlier status as an unobserved (latent) categorical state and computes a continuous <strong>posterior probability of being an outlier</strong> for every individual trial using Bayes’ rule.</p>
+
+<img data-src="images/cogmod_outlier_mixture.png" class="quarto-figure quarto-figure-center r-stretch" style="width:80.0%"></section>
+<section id="the-mathematical-classification-bayes-theorem" class="slide level2">
+<h2>The mathematical classification: Bayes’ theorem</h2>
+<p>For a specific trial <span class="math inline">\(i\)</span> with observed reaction time <span class="math inline">\(Y_i\)</span> and choice <span class="math inline">\(\text{dec}_i\)</span>, the posterior probability that trial <span class="math inline">\(i\)</span> came from the outlier process rather than the cognitive diffusion process is:</p>
+<div style="font-size: 0.85em;">
+<p><span class="math display">\[P(\text{Outlier} \mid Y_i, \text{dec}_i, \theta) = \frac{p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)}{(1 - p_{\text{outlier}}) \cdot p_{\text{diffusion}}(Y_i - t_0 \mid v, a, z) + p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)}\]</span></p>
+</div>
+<div style="font-size: 0.85em; margin-top: 15px;">
+<ul>
+<li class="fragment"><strong>Numerator:</strong> The joint probability of sampling an outlier trial and observing that specific RT under the contaminant distribution.</li>
+<li class="fragment"><strong>Denominator:</strong> The total marginal likelihood of that observation across both mixture components.</li>
+</ul>
+</div>
+<div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px 14px; margin-top: 15px; font-size: 0.8em;">
+<p>Because this computation uses the parameter vector <span class="math inline">\(\theta = \{v, a, z, t_0, p_{\text{outlier}}\}\)</span>, you get a full distribution of outlier probabilities across the posterior MCMC draws for each trial.</p>
+</div>
+</section>
+<section id="how-specific-reaction-times-receive-their-labels" class="slide level2">
+<h2>How specific reaction times receive their labels</h2>
+<p>The formula handles different types of anomalies automatically:</p>
+<div style="font-size: 0.78em;">
+<ul>
+<li class="fragment"><p><strong>Impossible fast responses (<span class="math inline">\(Y_i \le t_0\)</span>):</strong> Because the Wiener diffusion density <span class="math inline">\(p_{\text{diffusion}}(Y_i - t_0) = 0\)</span> when <span class="math inline">\(Y_i \le t_0\)</span>, the diffusion term vanishes entirely: <span class="math display">\[P(\text{Outlier} \mid Y_i \le t_0) = \frac{p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)}{0 + p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)} = 1.0\]</span> Any trial faster than the participant’s estimated non-decision latency receives an outlier probability of <strong>100%</strong>.</p></li>
+<li class="fragment"><p><strong>Extreme tail responses (<span class="math inline">\(Y_i \gg \text{mean RT}\)</span>):</strong> The diffusion density drops exponentially in the far right tail, decaying much faster than the contaminant density. As <span class="math inline">\(p_{\text{diffusion}} \to 0\)</span>, the ratio shifts predominantly to the outlier component, assigning probabilities near 1.0.</p></li>
+<li class="fragment"><p><strong>Typical responses (<span class="math inline">\(Y_i \approx \text{modal RT}\)</span>):</strong> Within the typical RT window matching accuracy predictions, <span class="math inline">\(p_{\text{diffusion}}\)</span> vastly exceeds <span class="math inline">\(p_{\text{contaminant}}\)</span>. Combined with the small prior on <span class="math inline">\(p_{\text{outlier}}\)</span> (<span class="math inline">\(\sim 0.01\)</span>), <span class="math inline">\(P(\text{Outlier})\)</span> drops close to <strong>0.0</strong>.</p></li>
+</ul>
+</div>
+</section>
+<section id="extracting-trial-outlier-labels-in-practice" class="slide level2">
+<h2>Extracting trial outlier labels in practice</h2>
+<p>In <code>cogmod</code>, you do not have to compute this ratio manually. The package provides the helper function <code>p_outlier()</code> to calculate the per-observation posterior probabilities:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="co"># Compute posterior outlier probabilities for every row in the dataset</span></span>
+<span id="cb6-2"><a href=""></a>trial_outliers <span class="ot">&lt;-</span> <span class="fu">p_outlier</span>(fit)</span>
+<span id="cb6-3"><a href=""></a></span>
+<span id="cb6-4"><a href=""></a><span class="co"># Inspect the result (returns mean probability, credible intervals, etc.)</span></span>
+<span id="cb6-5"><a href=""></a><span class="fu">head</span>(trial_outliers)</span>
+<span id="cb6-6"><a href=""></a></span>
+<span id="cb6-7"><a href=""></a><span class="co"># Classify using a threshold (e.g., probability &gt; 0.5)</span></span>
+<span id="cb6-8"><a href=""></a>flagged_trials <span class="ot">&lt;-</span> <span class="fu">which</span>(trial_outliers<span class="sc">$</span>mean <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px 16px; margin-top: 20px; font-size: 0.85em;">
+<p><strong>Principled probabilistic screening:</strong> Instead of imposing an arbitrary hard cutoff (like trimming all RTs below 200 ms or above 3,000 ms before fitting), this approach uses the participant’s own estimated drift rate and latency bounds to probabilistically identify trials that do not conform to the diffusion process.</p>
 </div>
 </section>
 <section id="code-walkthrough-libraries-and-data-preparation" class="slide level2">
 <h2>Code walkthrough: Libraries and data preparation</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="fu">library</span>(cogmod)</span>
-<span id="cb6-2"><a href=""></a><span class="fu">library</span>(brms)</span>
-<span id="cb6-3"><a href=""></a><span class="fu">library</span>(cmdstanr)</span>
-<span id="cb6-4"><a href=""></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb6-5"><a href=""></a><span class="fu">library</span>(qs2)</span>
-<span id="cb6-6"><a href=""></a><span class="fu">library</span>(here)</span>
-<span id="cb6-7"><a href=""></a></span>
-<span id="cb6-8"><a href=""></a>n_cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
-<span id="cb6-9"><a href=""></a>sampling_cores <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="dv">4</span>, <span class="fu">max</span>(<span class="dv">1</span>, n_cores <span class="sc">-</span> <span class="dv">1</span>))</span>
-<span id="cb6-10"><a href=""></a></span>
-<span id="cb6-11"><a href=""></a><span class="fu">data</span>(speed_acc, <span class="at">package =</span> <span class="st">"rtdists"</span>)</span>
-<span id="cb6-12"><a href=""></a>data_clean <span class="ot">&lt;-</span> speed_acc[<span class="sc">!</span>speed_acc<span class="sc">$</span>censor, ]</span>
-<span id="cb6-13"><a href=""></a>df <span class="ot">&lt;-</span> data_clean <span class="sc">%&gt;%</span> <span class="fu">droplevels</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a><span class="fu">library</span>(cogmod)</span>
+<span id="cb7-2"><a href=""></a><span class="fu">library</span>(brms)</span>
+<span id="cb7-3"><a href=""></a><span class="fu">library</span>(cmdstanr)</span>
+<span id="cb7-4"><a href=""></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb7-5"><a href=""></a><span class="fu">library</span>(qs2)</span>
+<span id="cb7-6"><a href=""></a><span class="fu">library</span>(here)</span>
+<span id="cb7-7"><a href=""></a></span>
+<span id="cb7-8"><a href=""></a>n_cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
+<span id="cb7-9"><a href=""></a>sampling_cores <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="dv">4</span>, <span class="fu">max</span>(<span class="dv">1</span>, n_cores <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb7-10"><a href=""></a></span>
+<span id="cb7-11"><a href=""></a><span class="fu">data</span>(speed_acc, <span class="at">package =</span> <span class="st">"rtdists"</span>)</span>
+<span id="cb7-12"><a href=""></a>data_clean <span class="ot">&lt;-</span> speed_acc[<span class="sc">!</span>speed_acc<span class="sc">$</span>censor, ]</span>
+<span id="cb7-13"><a href=""></a>df <span class="ot">&lt;-</span> data_clean <span class="sc">%&gt;%</span> <span class="fu">droplevels</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <h3 id="explanation">Explanation:</h3>
 <ul>
 <li class="fragment">We load <code>cogmod</code> for custom DDM likelihoods, <code>brms</code> for modeling, and <code>cmdstanr</code> as the backend.</li>
@@ -528,23 +631,23 @@ Dr.&nbsp;Bernhard Angele
 </section>
 <section id="code-walkthrough-variables-and-contrast-matrices" class="slide level2">
 <h2>Code walkthrough: Variables and contrast matrices</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>df<span class="sc">$</span>response_choice <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>response <span class="sc">==</span> <span class="st">"word"</span>, <span class="dv">1</span>L, <span class="dv">0</span>L)</span>
-<span id="cb7-2"><a href=""></a></span>
-<span id="cb7-3"><a href=""></a>df<span class="sc">$</span>Participant <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>id)</span>
-<span id="cb7-4"><a href=""></a>df<span class="sc">$</span>Item <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>stim)</span>
-<span id="cb7-5"><a href=""></a></span>
-<span id="cb7-6"><a href=""></a>df<span class="sc">$</span>Condition <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>condition, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"accuracy"</span>, <span class="st">"speed"</span>))</span>
-<span id="cb7-7"><a href=""></a><span class="fu">contrasts</span>(df<span class="sc">$</span>Condition) <span class="ot">&lt;-</span> <span class="fu">contr.sum</span>(<span class="dv">2</span>)</span>
-<span id="cb7-8"><a href=""></a><span class="fu">colnames</span>(<span class="fu">contrasts</span>(df<span class="sc">$</span>Condition)) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Acc_vs_Speed"</span>)</span>
-<span id="cb7-9"><a href=""></a></span>
-<span id="cb7-10"><a href=""></a>df<span class="sc">$</span>stimulus_type <span class="ot">&lt;-</span> <span class="fu">with</span>(df, <span class="fu">ifelse</span>(stim_cat <span class="sc">==</span> <span class="st">"nonword"</span>, <span class="st">"nonword"</span>,</span>
-<span id="cb7-11"><a href=""></a>                             <span class="fu">ifelse</span>(frequency <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"very_low"</span>), <span class="st">"low"</span>,</span>
-<span id="cb7-12"><a href=""></a>                             <span class="fu">ifelse</span>(frequency <span class="sc">==</span> <span class="st">"high"</span>, <span class="st">"high"</span>, <span class="cn">NA</span>))))</span>
-<span id="cb7-13"><a href=""></a>df<span class="sc">$</span>stimulus_type <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>stimulus_type, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"high"</span>, <span class="st">"low"</span>, <span class="st">"nonword"</span>))</span>
-<span id="cb7-14"><a href=""></a></span>
-<span id="cb7-15"><a href=""></a>helmert_mat <span class="ot">&lt;-</span> <span class="fu">contr.helmert</span>(<span class="dv">3</span>)[, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)]</span>
-<span id="cb7-16"><a href=""></a><span class="fu">colnames</span>(helmert_mat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Nonword_vs_Word"</span>, <span class="st">"Low_vs_High"</span>)</span>
-<span id="cb7-17"><a href=""></a><span class="fu">contrasts</span>(df<span class="sc">$</span>stimulus_type) <span class="ot">&lt;-</span> helmert_mat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>df<span class="sc">$</span>response_choice <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>response <span class="sc">==</span> <span class="st">"word"</span>, <span class="dv">1</span>L, <span class="dv">0</span>L)</span>
+<span id="cb8-2"><a href=""></a></span>
+<span id="cb8-3"><a href=""></a>df<span class="sc">$</span>Participant <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>id)</span>
+<span id="cb8-4"><a href=""></a>df<span class="sc">$</span>Item <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>stim)</span>
+<span id="cb8-5"><a href=""></a></span>
+<span id="cb8-6"><a href=""></a>df<span class="sc">$</span>Condition <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>condition, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"accuracy"</span>, <span class="st">"speed"</span>))</span>
+<span id="cb8-7"><a href=""></a><span class="fu">contrasts</span>(df<span class="sc">$</span>Condition) <span class="ot">&lt;-</span> <span class="fu">contr.sum</span>(<span class="dv">2</span>)</span>
+<span id="cb8-8"><a href=""></a><span class="fu">colnames</span>(<span class="fu">contrasts</span>(df<span class="sc">$</span>Condition)) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Acc_vs_Speed"</span>)</span>
+<span id="cb8-9"><a href=""></a></span>
+<span id="cb8-10"><a href=""></a>df<span class="sc">$</span>stimulus_type <span class="ot">&lt;-</span> <span class="fu">with</span>(df, <span class="fu">ifelse</span>(stim_cat <span class="sc">==</span> <span class="st">"nonword"</span>, <span class="st">"nonword"</span>,</span>
+<span id="cb8-11"><a href=""></a>                             <span class="fu">ifelse</span>(frequency <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"very_low"</span>), <span class="st">"low"</span>,</span>
+<span id="cb8-12"><a href=""></a>                             <span class="fu">ifelse</span>(frequency <span class="sc">==</span> <span class="st">"high"</span>, <span class="st">"high"</span>, <span class="cn">NA</span>))))</span>
+<span id="cb8-13"><a href=""></a>df<span class="sc">$</span>stimulus_type <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>stimulus_type, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"high"</span>, <span class="st">"low"</span>, <span class="st">"nonword"</span>))</span>
+<span id="cb8-14"><a href=""></a></span>
+<span id="cb8-15"><a href=""></a>helmert_mat <span class="ot">&lt;-</span> <span class="fu">contr.helmert</span>(<span class="dv">3</span>)[, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)]</span>
+<span id="cb8-16"><a href=""></a><span class="fu">colnames</span>(helmert_mat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Nonword_vs_Word"</span>, <span class="st">"Low_vs_High"</span>)</span>
+<span id="cb8-17"><a href=""></a><span class="fu">contrasts</span>(df<span class="sc">$</span>stimulus_type) <span class="ot">&lt;-</span> helmert_mat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <h3 id="explanation-1">Explanation:</h3>
 <ul>
 <li class="fragment">Codes the binary choice (0 = nonword, 1 = word) and sets random grouping factors.</li>
@@ -553,16 +656,16 @@ Dr.&nbsp;Bernhard Angele
 </section>
 <section id="code-walkthrough-model-formula-specification" class="slide level2">
 <h2>Code walkthrough: Model formula specification</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>f_ddm <span class="ot">&lt;-</span> <span class="fu">bf</span>(</span>
-<span id="cb8-2"><a href=""></a>  rt <span class="sc">|</span> <span class="fu">dec</span>(response_choice) <span class="sc">~</span> stimulus_type <span class="sc">*</span> Condition <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Participant) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item),</span>
-<span id="cb8-3"><a href=""></a>  boundary <span class="sc">~</span> Condition,</span>
-<span id="cb8-4"><a href=""></a>  ndt <span class="sc">~</span> Condition,</span>
-<span id="cb8-5"><a href=""></a>  bias <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb8-6"><a href=""></a>  <span class="at">sigmadrift =</span> <span class="dv">0</span>,</span>
-<span id="cb8-7"><a href=""></a>  <span class="at">sigmabias =</span> <span class="dv">0</span>,</span>
-<span id="cb8-8"><a href=""></a>  <span class="at">sigmandt =</span> <span class="dv">0</span>,</span>
-<span id="cb8-9"><a href=""></a>  <span class="at">family =</span> <span class="fu">cogmod_ddm</span>()</span>
-<span id="cb8-10"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>f_ddm <span class="ot">&lt;-</span> <span class="fu">bf</span>(</span>
+<span id="cb9-2"><a href=""></a>  rt <span class="sc">|</span> <span class="fu">dec</span>(response_choice) <span class="sc">~</span> stimulus_type <span class="sc">*</span> Condition <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Participant) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item),</span>
+<span id="cb9-3"><a href=""></a>  boundary <span class="sc">~</span> Condition,</span>
+<span id="cb9-4"><a href=""></a>  ndt <span class="sc">~</span> Condition,</span>
+<span id="cb9-5"><a href=""></a>  bias <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb9-6"><a href=""></a>  <span class="at">sigmadrift =</span> <span class="dv">0</span>,</span>
+<span id="cb9-7"><a href=""></a>  <span class="at">sigmabias =</span> <span class="dv">0</span>,</span>
+<span id="cb9-8"><a href=""></a>  <span class="at">sigmandt =</span> <span class="dv">0</span>,</span>
+<span id="cb9-9"><a href=""></a>  <span class="at">family =</span> <span class="fu">cogmod_ddm</span>()</span>
+<span id="cb9-10"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <h3 id="explanation-2">Explanation:</h3>
 <ul>
 <li class="fragment"><code>rt | dec(response_choice)</code> tells <code>brms</code> and <code>cogmod</code> which column is RT and which is choice.</li>
@@ -570,11 +673,11 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment">Trial-to-trial variabilities (<code>sigmadrift</code>, <code>sigmabias</code>, <code>sigmandt</code>) are fixed to 0 to estimate the standard 4-parameter DDM.</li>
 </ul>
 </section>
-<section id="code-walkthrough-the-triad-of-automation-helpers" class="slide level2">
-<h2>Code walkthrough: The triad of automation helpers</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>prior_ddm <span class="ot">&lt;-</span> <span class="fu">cogmod_priors</span>(f_ddm, df)</span>
-<span id="cb9-2"><a href=""></a>init_ddm  <span class="ot">&lt;-</span> <span class="fu">cogmod_inits</span>(f_ddm, df)</span>
-<span id="cb9-3"><a href=""></a>sv_ddm    <span class="ot">&lt;-</span> <span class="fu">cogmod_stanvars</span>(f_ddm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="code-walkthrough-cogmod-helpers-for-priors-inits-and-stan-functions" class="slide level2">
+<h2>Code walkthrough: Cogmod helpers for priors, inits, and Stan functions</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>prior_ddm <span class="ot">&lt;-</span> <span class="fu">cogmod_priors</span>(f_ddm, df)</span>
+<span id="cb10-2"><a href=""></a>init_ddm  <span class="ot">&lt;-</span> <span class="fu">cogmod_inits</span>(f_ddm, df)</span>
+<span id="cb10-3"><a href=""></a>sv_ddm    <span class="ot">&lt;-</span> <span class="fu">cogmod_stanvars</span>(f_ddm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="columns">
 <div class="column" style="width:33%;">
 <h4 id="cogmod_priors"><code>cogmod_priors()</code></h4>
@@ -587,25 +690,136 @@ Dr.&nbsp;Bernhard Angele
 <p>Injects custom C++ Stan functions (<code>cogmod_ddm_lpdf</code>) into Stan’s <code>functions {}</code> block for automatic differentiation.</p>
 </div></div>
 </section>
+<section id="default-priors-drift-rate-boundary-and-outliers" class="slide level2">
+<h2>Default priors: Drift rate, boundary, and outliers</h2>
+<p>Extracted via <code>get_prior()</code> and configured by <code>cogmod_priors()</code>:</p>
+<div style="font-size: 0.75em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 23%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter / Effect</th>
+<th style="text-align: left;">Target</th>
+<th style="text-align: left;">Default Prior</th>
+<th style="text-align: center;">Scale</th>
+<th style="text-align: left;">Interpretation &amp; Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Drift Rate (<span class="math inline">\(\mu\)</span>)</strong></td>
+<td style="text-align: left;">Intercept</td>
+<td style="text-align: left;"><code>student_t(3, 0.6, 2.5)</code></td>
+<td style="text-align: center;">Identity</td>
+<td style="text-align: left;">Weakly informative; centered near small positive drift</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Fixed effects (<span class="math inline">\(b\)</span>)</td>
+<td style="text-align: left;"><em>(flat)</em></td>
+<td style="text-align: center;">Identity</td>
+<td style="text-align: left;">Uninformative for stimulus and condition contrasts</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Boundary (<span class="math inline">\(a\)</span>)</strong></td>
+<td style="text-align: left;">Intercept &amp; <span class="math inline">\(b\)</span></td>
+<td style="text-align: left;"><em>(flat)</em></td>
+<td style="text-align: center;">Softplus</td>
+<td style="text-align: left;">Uninformative on softplus scale (<span class="math inline">\(a = \log(1 + e^\eta)\)</span>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Outlier Rate</strong></td>
+<td style="text-align: left;"><code>poutlier</code></td>
+<td style="text-align: left;"><code>exponential(100)</code></td>
+<td style="text-align: center;">Bound <span class="math inline">\([0, 1]\)</span></td>
+<td style="text-align: left;">Prior mean = <span class="math inline">\(0.01\)</span> (<span class="math inline">\(\approx 1\%\)</span> expected contaminant rate)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px; margin-top: 20px; font-size: 0.85em;">
+<p><strong>Contaminant trial handling:</strong> The <code>exponential(100)</code> prior on <code>poutlier</code> strongly shrinks contaminant probability toward zero while giving the mixture model flexibility to absorb extreme outliers without distorting DDM parameters.</p>
+</div>
+</section>
+<section id="default-priors-non-decision-time-bias-and-random-effects" class="slide level2">
+<h2>Default priors: Non-decision time, bias, and random effects</h2>
+<p>Extracted via <code>get_prior()</code> and configured by <code>cogmod_priors()</code>:</p>
+<div style="font-size: 0.75em;">
+<table class="caption-top">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 23%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameter / Effect</th>
+<th style="text-align: left;">Target</th>
+<th style="text-align: left;">Default Prior</th>
+<th style="text-align: center;">Scale</th>
+<th style="text-align: left;">Interpretation &amp; Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Non-Decision (<span class="math inline">\(t_0\)</span>)</strong></td>
+<td style="text-align: left;">Intercept</td>
+<td style="text-align: left;"><code>normal(-1.2, 0.2)</code></td>
+<td style="text-align: center;">Log</td>
+<td style="text-align: left;"><span class="math inline">\(\exp(-1.2) \approx 301\)</span> ms; regularizes baseline NDT</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Condition slope (<span class="math inline">\(b\)</span>)</td>
+<td style="text-align: left;"><code>normal(0, 0.2)</code></td>
+<td style="text-align: center;">Log</td>
+<td style="text-align: left;">Constrains condition shifts in sensory/motor latency</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Bias (<span class="math inline">\(z/a\)</span>)</strong></td>
+<td style="text-align: left;">Intercept</td>
+<td style="text-align: left;"><code>logistic(0, 1)</code></td>
+<td style="text-align: center;">Logit</td>
+<td style="text-align: left;">Equivalent to <span class="math inline">\(\text{Uniform}(0, 1)\)</span> on probability scale; centered at 0.5 (unbiased)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Random Effects (<span class="math inline">\(\sigma\)</span>)</strong></td>
+<td style="text-align: left;"><code>(1 | Participant)</code>, <code>(1 | Item)</code></td>
+<td style="text-align: left;"><code>student_t(3, 0, 2.5)</code></td>
+<td style="text-align: center;">Bound <span class="math inline">\(\ge 0\)</span></td>
+<td style="text-align: left;">Standard half-Student-<span class="math inline">\(t\)</span> shrinkage for crossed group SDs</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="code-walkthrough-mcmc-sampling-and-serialization" class="slide level2">
 <h2>Code walkthrough: MCMC sampling and serialization</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>model_ddm <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
-<span id="cb10-2"><a href=""></a>  <span class="at">formula    =</span> f_ddm,</span>
-<span id="cb10-3"><a href=""></a>  <span class="at">data       =</span> df,</span>
-<span id="cb10-4"><a href=""></a>  <span class="at">prior      =</span> prior_ddm,</span>
-<span id="cb10-5"><a href=""></a>  <span class="at">init       =</span> init_ddm,</span>
-<span id="cb10-6"><a href=""></a>  <span class="at">stanvars   =</span> sv_ddm,</span>
-<span id="cb10-7"><a href=""></a>  <span class="at">chains     =</span> <span class="dv">4</span>,</span>
-<span id="cb10-8"><a href=""></a>  <span class="at">cores      =</span> sampling_cores,</span>
-<span id="cb10-9"><a href=""></a>  <span class="at">threads    =</span> <span class="fu">threading</span>(<span class="dv">2</span>),</span>
-<span id="cb10-10"><a href=""></a>  <span class="at">iter       =</span> <span class="dv">1000</span>,</span>
-<span id="cb10-11"><a href=""></a>  <span class="at">warmup     =</span> <span class="dv">500</span>,</span>
-<span id="cb10-12"><a href=""></a>  <span class="at">backend    =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb10-13"><a href=""></a>  <span class="at">control    =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.95</span>, <span class="at">max_treedepth =</span> <span class="dv">12</span>),</span>
-<span id="cb10-14"><a href=""></a>  <span class="at">file_refit =</span> <span class="st">"always"</span></span>
-<span id="cb10-15"><a href=""></a>)</span>
-<span id="cb10-16"><a href=""></a></span>
-<span id="cb10-17"><a href=""></a>qs2<span class="sc">::</span><span class="fu">qs_save</span>(model_ddm, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"models"</span>, <span class="st">"ddm_cogmod_stimulus_coding_model.qs"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>model_ddm <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb11-2"><a href=""></a>  <span class="at">formula    =</span> f_ddm,</span>
+<span id="cb11-3"><a href=""></a>  <span class="at">data       =</span> df,</span>
+<span id="cb11-4"><a href=""></a>  <span class="at">prior      =</span> prior_ddm,</span>
+<span id="cb11-5"><a href=""></a>  <span class="at">init       =</span> init_ddm,</span>
+<span id="cb11-6"><a href=""></a>  <span class="at">stanvars   =</span> sv_ddm,</span>
+<span id="cb11-7"><a href=""></a>  <span class="at">chains     =</span> <span class="dv">4</span>,</span>
+<span id="cb11-8"><a href=""></a>  <span class="at">cores      =</span> sampling_cores,</span>
+<span id="cb11-9"><a href=""></a>  <span class="at">threads    =</span> <span class="fu">threading</span>(<span class="dv">2</span>),</span>
+<span id="cb11-10"><a href=""></a>  <span class="at">iter       =</span> <span class="dv">1000</span>,</span>
+<span id="cb11-11"><a href=""></a>  <span class="at">warmup     =</span> <span class="dv">500</span>,</span>
+<span id="cb11-12"><a href=""></a>  <span class="at">backend    =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb11-13"><a href=""></a>  <span class="at">control    =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.95</span>, <span class="at">max_treedepth =</span> <span class="dv">12</span>),</span>
+<span id="cb11-14"><a href=""></a>  <span class="at">file_refit =</span> <span class="st">"always"</span></span>
+<span id="cb11-15"><a href=""></a>)</span>
+<span id="cb11-16"><a href=""></a></span>
+<span id="cb11-17"><a href=""></a>qs2<span class="sc">::</span><span class="fu">qs_save</span>(model_ddm, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"models"</span>, <span class="st">"ddm_cogmod_stimulus_coding_model.qs"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <h3 id="explanation-3">Explanation:</h3>
 <ul>
 <li class="fragment"><strong><code>threads = threading(2)</code>:</strong> If you have sufficient cores, you can speed up sampling a bit by using in-chain parallelization (here: using 2 cores per chain for a total of 8 cores).</li>
@@ -824,7 +1038,7 @@ Dr.&nbsp;Bernhard Angele
 <section id="model-validation-posterior-predictive-check-ppc" class="slide level2">
 <h2>Model validation: Posterior predictive check (PPC)</h2>
 <div class="columns">
-<div class="column" style="width:40%;">
+<div class="column" style="width: 46%; font-size: 0.80em; line-height: 1.25;">
 <h3 id="validating-the-ddm-with-a-ppc">Validating the DDM with a PPC</h3>
 <ul>
 <li class="fragment">We simulate 50 replicate datasets (<span class="math inline">\(y^{\text{rep}}\)</span>) using the posterior draws.</li>
@@ -836,18 +1050,19 @@ Dr.&nbsp;Bernhard Angele
 <li class="fragment">Maybe the decision to collapse over low and very low frequency was not ideal?</li>
 <li class="fragment">Could also switch to the 5-parameter DDM with trial-to-trial variability in drift, bias, and NDT.</li>
 </ul></li>
-<li class="fragment">Generated via standalone script: <code>workshop_sepex/run_posterior_predictive_check.R</code></li>
+<li class="fragment">Generated via standalone script:<br> <code>run_posterior_predictive_check.R</code></li>
 </ul>
-</div><div class="column" style="width:60%;">
+</div><div class="column" style="width:52%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="images/stimulus_ppc.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+<p><img data-src="images/stimulus_ppc.png" class="quarto-figure quarto-figure-center" style="max-height: 520px; object-fit: contain;;width:100.0%"></p>
 </figure>
 </div>
 </div></div>
 </section>
 <section id="do-our-results-match-wagenmakers-et-al.-2008" class="slide level2">
 <h2>Do our results match Wagenmakers et al.&nbsp;(2008)?</h2>
+<div style="font-size: 0.72em;">
 <table class="caption-top">
 <colgroup>
 <col style="width: 23%">
@@ -890,15 +1105,88 @@ Dr.&nbsp;Bernhard Angele
 </tr>
 </tbody>
 </table>
-<div style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 12px; border-radius: 6px; font-size: 0.9em; margin-top: 15px;">
+</div>
+<div style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 10px 14px; border-radius: 6px; font-size: 0.75em; margin-top: 15px;">
 <p><strong>Conclusion:</strong> Our Bayesian hierarchical model fully reproduces the classic findings while improving upon traditional EZ-diffusion or individual-by-individual fitting by estimating crossed item and participant random effects simultaneously!</p>
 </div>
 </section>
 <section id="key-takeaways-for-ddm-in-practice" class="slide level2">
 <h2>Key takeaways for DDM in practice</h2>
-<div style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 18px; border-radius: 6px; font-size: 0.95em;">
-<p><strong>1. Consider using Docker:</strong> Running brms requires a large number of installed packages plus <code>cmdrstan</code> for the most efficient sampling. Installing these in Windows or MacOS can take a while. Using a pre-built Docker image with all dependencies is often the easiest solution.<br><br> <strong>2. Think about how to code the responses:</strong> Use response coding (<span class="math inline">\(0 = \text{Nonword}, 1 = \text{Word}\)</span>) in 2AFC tasks to ensure balanced boundaries.<br><br> <strong>3. Think carefully about your model:</strong> Start simple (e.g.&nbsp;with the 4-parameter DDM) and only add complexity if the simpler model fails to capture the data. Think about which fixed and random effects are theoretically sensible to include for which parameter.<br><br> <strong>4. Use <code>cogmod</code></strong>: Using <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code>, you can avoid most MCMC failures. Always fit reaction times in <strong>seconds</strong> or the model will fail.<br><br> <strong>5. Think about your contrasts:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (discrimination vs.&nbsp;frequency).<br><br> <strong>6. Expect long runtimes and always save the fitted model:</strong> Fitting a hierarchical DDM with crossed random effects is computationally expensive. Your script should save the fitted model to disk as soon as it is fitted so that you can load it later for analysis.</p>
+<div style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 14px 18px; border-radius: 6px; font-size: 0.72em; line-height: 1.3;">
+<p style="margin-bottom: 8px;">
+<strong>1. Consider using Docker:</strong> Running <code>brms</code> requires many dependencies plus <code>cmdstanr</code> for efficient sampling. Installing these across OSs can be tedious; a pre-built Docker container guarantees reproducibility and instant setup.
+</p>
+<p style="margin-bottom: 8px;">
+<strong>2. Response coding vs.&nbsp;error coding:</strong> In 2AFC tasks with high accuracy (~95%), error coding causes severe data sparsity. Response coding (<span class="math inline">\(0 = \text{Nonword}, 1 = \text{Word}\)</span>) ensures balanced boundaries and interpretable drift.
+</p>
+<p style="margin-bottom: 8px;">
+<strong>3. Model architecture:</strong> Start simple (e.g., 4-parameter DDM) before adding complexity. Select fixed and random effects that directly test substantive cognitive hypotheses.
+</p>
+<p style="margin-bottom: 8px;">
+<strong>4. Use <code>cogmod</code>:</strong> Helpers like <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code> prevent MCMC initialization failures and boundary crashes. Always fit reaction times in <strong>seconds</strong>.
+</p>
+<p style="margin-bottom: 8px;">
+<strong>5. Contrast coding:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (lexical discrimination vs.&nbsp;word frequency sensitivity).
+</p>
+<p style="margin-bottom: 0;">
+<strong>6. Long runtimes &amp; serialization:</strong> Hierarchical crossed random effects models take hours to sample. Always serialize the fitted model to disk and extract summary objects for instant slide rendering.
+</p>
 </div>
+</section>
+<section id="future-directions-expanding-the-model" class="slide level2">
+<h2>Future directions: Expanding the model</h2>
+<div class="columns">
+<div class="column" style="width: 50%; font-size: 0.72em; line-height: 1.35;">
+<p><strong><span style="color: #1F497D;">1. Weakly informative priors for slopes</span></strong></p>
+<ul>
+<li class="fragment"><p><code>cogmod_priors()</code> returns a full table of defaults (including flat priors on slopes).</p></li>
+<li class="fragment"><p>Use <code>c(..., replace = TRUE)</code> to overwrite defaults without duplicate prior errors:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href=""></a><span class="co"># Safely overwrite defaults with regularizing slope priors</span></span>
+<span id="cb12-2"><a href=""></a>priors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb12-3"><a href=""></a>  <span class="fu">cogmod_priors</span>(f_ddm, df),</span>
+<span id="cb12-4"><a href=""></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb12-5"><a href=""></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">dpar =</span> <span class="st">"boundary"</span>),</span>
+<span id="cb12-6"><a href=""></a>  <span class="at">replace =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-7"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ul>
+<p><br></p>
+<p><strong><span style="color: #1F497D;">2. Five-parameter DDM (trial variability)</span></strong></p>
+<ul>
+<li class="fragment">Our model fixed trial variability to 0 (<code>sigmadrift = 0</code>, <code>sigmandt = 0</code>).</li>
+<li class="fragment">Estimating trial-to-trial drift (<code>sigmadrift ~ 1</code>) or latency variability (<code>sigmandt ~ 1</code>) can resolve the RT tail deviations observed in the PPC.</li>
+</ul>
+</div><div class="column" style="width: 48%; font-size: 0.72em; line-height: 1.35;">
+<p><strong><span style="color: #1F497D;">3. Adding random slopes</span></strong></p>
+<ul>
+<li class="fragment">Current model has crossed random intercepts: <code>(1 | Participant) + (1 | Item)</code>.</li>
+<li class="fragment">Adding random slopes—e.g.&nbsp;<code>(1 + Condition | Participant)</code>—allows individual differences in speed-accuracy tradeoff caution.</li>
+</ul>
+<div style="background: #FFF3CD; border-left: 5px solid #E65100; padding: 12px 14px; border-radius: 6px; margin-top: 16px;">
+<p><strong style="color: #B73E00;">The challenge: Model complexity</strong></p>
+<ul>
+<li class="fragment"><strong>Runtime explosion:</strong> Crossed random intercepts took ~2.6 hours. Adding random slopes and trial variability can push runtimes to 24+ hours or days.</li>
+<li class="fragment"><strong>MCMC geometry:</strong> Correlated random effects and trial-level variance parameters create steep posterior curvature (funnels, divergent transitions).</li>
+<li class="fragment"><strong>Pragmatic modeling:</strong> Always start simple with 4 parameters and random intercepts; only add complexity if justified by PPCs and specific cognitive hypotheses.</li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="presentation-and-repository" class="slide level2 dark-bg" data-background-color="#1F497D">
+<h2>Presentation and repository</h2>
+<div class="columns">
+<div class="column" style="width: 50%; text-align: center;">
+<h3 id="online-slides">Online slides</h3>
+<p><img data-src="images/qr_presentation.png" style="background: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" width="240" height="240"></p>
+<p style="margin-top: 15px; font-size: 0.75em;">
+<a href="https://bernhardangele.github.io/sepex_ddm_workshop_2026/" target="_blank" style="color: #EEECE1; font-weight: bold; text-decoration: underline; word-break: break-all;">bernhardangele.github.io/sepex_ddm_workshop_2026/</a>
+</p>
+</div><div class="column" style="width: 50%; text-align: center;">
+<h3 id="github-repository">GitHub repository</h3>
+<p><img data-src="images/qr_repository.png" style="background: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" width="240" height="240"></p>
+<p style="margin-top: 15px; font-size: 0.75em;">
+<a href="https://github.com/bernhardangele/sepex_ddm_workshop_2026" target="_blank" style="color: #EEECE1; font-weight: bold; text-decoration: underline; word-break: break-all;">github.com/bernhardangele/sepex_ddm_workshop_2026</a>
+</p>
+</div></div>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>

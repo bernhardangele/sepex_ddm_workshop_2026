@@ -15,7 +15,38 @@ bibliography: references.bib
 csl: apa.csl
 ---
 
-## Session overview (30 minutes) {.dark-bg background-color="#FFFFFF"}
+## Presentation slides {.dark-bg background-color="#1F497D"}
+
+Scan the QR code or visit the link to follow along on your own device:
+
+::: {.columns}
+::: {.column width="45%"}
+<div style="text-align: center;">
+![](images/qr_presentation.png){width="280" height="280" style="background: white; padding: 12px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"}
+</div>
+:::
+
+::: {.column width="55%"}
+<div style="font-size: 0.85em; text-align: left; padding-top: 15px;">
+<p>**Interactive presentation on GitHub Pages:**</p>
+
+<p style="margin-top: 15px;">
+<a href="https://bernhardangele.github.io/sepex_ddm_workshop_2026/" target="_blank" style="color: #EEECE1; font-weight: bold; text-decoration: underline; font-size: 0.95em; word-break: break-all;">https://bernhardangele.github.io/sepex_ddm_workshop_2026/</a>
+</p>
+
+::: {.nonincremental}
+<ul style="margin-top: 20px; font-size: 0.9em; color: #FBFBFA;">
+  <li>Interactive slides with zoomable plots & code</li>
+  <li>Accessible on smartphones, tablets, and laptops</li>
+</ul>
+:::
+</div>
+:::
+:::
+
+---
+
+## Session overview {.dark-bg background-color="#FFFFFF"}
 
 ::: {style="background: linear-gradient(135deg, #1F497D, #C2002F); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 25px; font-weight: bold; font-size: 1.15em;"}
   Drift Diffusion Modeling in R with brms & cogmod
@@ -246,15 +277,14 @@ Default dummy coding (`contr.treatment`) pairwise comparisons against a baseline
 
 ## Why these fixed and random effects?
 
+::: {style="font-size: 0.82em;"}
 ```r
 f_ddm <- bf(
   rt | dec(response_choice) ~ stimulus_type * Condition + (1 | Participant) + (1 | Item),
   boundary ~ Condition,
   ndt ~ Condition,
   bias ~ 1,
-  sigmadrift = 0,
-  sigmabias = 0,
-  sigmandt = 0,
+  sigmadrift = 0, sigmabias = 0, sigmandt = 0,
   family = cogmod_ddm()
 )
 ```
@@ -265,33 +295,118 @@ f_ddm <- bf(
 - **Drift rate ($\mu$):** Drift rate depends on ease of processing of stimulus. Sign depends on lexicality.
 - **Boundary ($a$):** Speed-accuracy tradeoff should modify threshold (more speed = boundaries closer together).
 - **NDT ($t_0$):** NDT might account for very early sensory differences.
-- **Bias ($z$):** Is there a bias towards Word/Nonword before seeing the stimulus? Does the speed/accuracy instruction affect this?
+- **Bias/Starting point ($z$):** Is there a bias towards Word/Nonword before seeing the stimulus?
 :::
 
 ::: {.column width="50%"}
 ### Crossed random intercepts
 - **`(1 | Participant)`:** Individual differences in cognitive processing speed (regardless of condition).
 - **`(1 | Item)`:** Unique word/nonword difficulty across all 4,780 items (regardless of condition).
-- Not the maxiumum random effects structure!
+- Not the maximum random effects structure!
     - But full structure may be too complex to fit.
+:::
 :::
 :::
 
 ---
 
-## Parameter link functions in `cogmod`
+## Parameter link functions: Drift rate and boundary
 
 `cogmod_ddm()` handles parameter bounding via specialized link functions:
 
+::: {style="font-size: 0.75em;"}
 | Parameter | Link Function | Formula | Rationale |
 | :--- | :---: | :---: | :--- |
-| **Drift Rate ($\mu$)** | `identity` | $\mu = \eta$ | Identity link works since drift rate can be positive or negative ($-\infty, +\infty$) |
-| **Boundary ($a$)** | **`softplus`** | $a = \log(1 + e^{\eta})$ | **Smooth positive gradient!** Avoids numerical issues with log-links. |
-| **Non-decision ($t_0$)** | `log` | $t_0 = e^{\eta}$ | Strictly positive latency ($t_0 > 0$) |
-| **Bias ($z/a$)** | `logit` | $z = \frac{1}{1 + e^{-\eta}}$ | Strictly bounded in $(0, 1)$ ($0.5 = \text{unbiased}$) |
+| **Drift Rate ($\mu$)** | `identity` | $\mu = \eta$ | Allows accumulation slope to be positive or negative ($-\infty, +\infty$) depending on lexical status |
+| **Boundary ($a$)** | **`softplus`** | $a = \log(1 + e^{\eta})$ | **Smooth positive gradient!** Strictly positive ($a > 0$) while avoiding exponential explosion |
+:::
 
-::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px; margin-top: 15px; font-size: 0.9em;"}
-  <strong>Why softplus for boundary?</strong> If $\eta > 3$, a log link causes $a = \exp(\eta)$ to increase exponentially. `softplus` behaves linearly for positive values and smoothly approaches zero, which helps with sampling.
+::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px; margin-top: 20px; font-size: 0.85em;"}
+  <strong>Why softplus for boundary?</strong> If $\eta > 3$, a traditional log link causes $a = \exp(\eta)$ to grow exponentially and reach very large values. `softplus` behaves linearly for positive values and smoothly approaches zero, preventing numerical instability and divergent transitions during HMC sampling.
+:::
+
+---
+
+## Parameter link functions: Non-decision time and bias
+
+`cogmod_ddm()` also constrains non-decision latency and response bias:
+
+::: {style="font-size: 0.75em;"}
+| Parameter | Link Function | Formula | Rationale |
+| :--- | :---: | :---: | :--- |
+| **Non-decision ($t_0$)** | `log` | $t_0 = e^{\eta}$ | Strictly positive latency ($t_0 > 0$); captures sensory encoding and motor execution |
+| **Bias ($z/a$)** | `logit` | $z = \frac{1}{1 + e^{-\eta}}$ | Strictly bounded in $(0, 1)$; $0.5$ represents an unbiased starting point |
+:::
+
+::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px; margin-top: 20px; font-size: 0.85em;"}
+  <strong>Automatic boundary enforcement:</strong> Custom link functions in `brms` allow standard additive linear predictors ($\eta = X\beta$) while ensuring all sampled parameters strictly respect biological and physical boundary conditions.
+:::
+
+---
+
+## The outlier mixture component
+
+In this mixture framework, trials are **not deterministically classified** during model fitting. Instead, the model treats outlier status as an unobserved (latent) categorical state and computes a continuous **posterior probability of being an outlier** for every individual trial using Bayes' rule.
+
+![](images/cogmod_outlier_mixture.png){width="80%" fig-align="center"}
+
+---
+
+## The mathematical classification: Bayes' theorem
+
+For a specific trial $i$ with observed reaction time $Y_i$ and choice $\text{dec}_i$, the posterior probability that trial $i$ came from the outlier process rather than the cognitive diffusion process is:
+
+::: {style="font-size: 0.85em;"}
+$$P(\text{Outlier} \mid Y_i, \text{dec}_i, \theta) = \frac{p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)}{(1 - p_{\text{outlier}}) \cdot p_{\text{diffusion}}(Y_i - t_0 \mid v, a, z) + p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)}$$
+:::
+
+::: {style="font-size: 0.85em; margin-top: 15px;"}
+* **Numerator:** The joint probability of sampling an outlier trial and observing that specific RT under the contaminant distribution.
+* **Denominator:** The total marginal likelihood of that observation across both mixture components.
+:::
+
+::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 10px 14px; margin-top: 15px; font-size: 0.8em;"}
+  Because this computation uses the parameter vector $\theta = \{v, a, z, t_0, p_{\text{outlier}}\}$, you get a full distribution of outlier probabilities across the posterior MCMC draws for each trial.
+:::
+
+---
+
+## How specific reaction times receive their labels
+
+The formula handles different types of anomalies automatically:
+
+::: {style="font-size: 0.78em;"}
+* **Impossible fast responses ($Y_i \le t_0$):**
+  Because the Wiener diffusion density $p_{\text{diffusion}}(Y_i - t_0) = 0$ when $Y_i \le t_0$, the diffusion term vanishes entirely:
+  $$P(\text{Outlier} \mid Y_i \le t_0) = \frac{p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)}{0 + p_{\text{outlier}} \cdot p_{\text{contaminant}}(Y_i)} = 1.0$$
+  Any trial faster than the participant's estimated non-decision latency receives an outlier probability of **100%**.
+
+* **Extreme tail responses ($Y_i \gg \text{mean RT}$):**
+  The diffusion density drops exponentially in the far right tail, decaying much faster than the contaminant density. As $p_{\text{diffusion}} \to 0$, the ratio shifts predominantly to the outlier component, assigning probabilities near 1.0.
+
+* **Typical responses ($Y_i \approx \text{modal RT}$):**
+  Within the typical RT window matching accuracy predictions, $p_{\text{diffusion}}$ vastly exceeds $p_{\text{contaminant}}$. Combined with the small prior on $p_{\text{outlier}}$ ($\sim 0.01$), $P(\text{Outlier})$ drops close to **0.0**.
+:::
+
+---
+
+## Extracting trial outlier labels in practice
+
+In `cogmod`, you do not have to compute this ratio manually. The package provides the helper function `p_outlier()` to calculate the per-observation posterior probabilities:
+
+```r
+# Compute posterior outlier probabilities for every row in the dataset
+trial_outliers <- p_outlier(fit)
+
+# Inspect the result (returns mean probability, credible intervals, etc.)
+head(trial_outliers)
+
+# Classify using a threshold (e.g., probability > 0.5)
+flagged_trials <- which(trial_outliers$mean > 0.5)
+```
+
+::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px 16px; margin-top: 20px; font-size: 0.85em;"}
+  <strong>Principled probabilistic screening:</strong> Instead of imposing an arbitrary hard cutoff (like trimming all RTs below 200 ms or above 3,000 ms before fitting), this approach uses the participant's own estimated drift rate and latency bounds to probabilistically identify trials that do not conform to the diffusion process.
 :::
 
 ---
@@ -371,7 +486,7 @@ f_ddm <- bf(
 
 ---
 
-## Code walkthrough: The triad of automation helpers
+## Code walkthrough: Cogmod helpers for priors, inits, and Stan functions
 
 ```r
 prior_ddm <- cogmod_priors(f_ddm, df)
@@ -395,6 +510,41 @@ Inspects empirical RT minimums and generates jittered inits satisfying $t_0 < \m
 Injects custom C++ Stan functions (`cogmod_ddm_lpdf`) into Stan's `functions {}` block for automatic differentiation.
 :::
 :::
+
+---
+
+## Default priors: Drift rate, boundary, and outliers
+
+Extracted via `get_prior()` and configured by `cogmod_priors()`:
+
+::: {style="font-size: 0.75em;"}
+| Parameter / Effect | Target | Default Prior | Scale | Interpretation & Rationale |
+| :--- | :--- | :--- | :---: | :--- |
+| **Drift Rate ($\mu$)** | Intercept | `student_t(3, 0.6, 2.5)` | Identity | Weakly informative; centered near small positive drift |
+| | Fixed effects ($b$) | *(flat)* | Identity | Uninformative for stimulus and condition contrasts |
+| **Boundary ($a$)** | Intercept & $b$ | *(flat)* | Softplus | Uninformative on softplus scale ($a = \log(1 + e^\eta)$) |
+| **Outlier Rate** | `poutlier` | `exponential(100)` | Bound $[0, 1]$ | Prior mean = $0.01$ ($\approx 1\%$ expected contaminant rate) |
+:::
+
+::: {style="background: #E8F4F8; border-left: 5px solid #1F497D; padding: 12px; margin-top: 20px; font-size: 0.85em;"}
+  <strong>Contaminant trial handling:</strong> The `exponential(100)` prior on `poutlier` strongly shrinks contaminant probability toward zero while giving the mixture model flexibility to absorb extreme outliers without distorting DDM parameters.
+:::
+
+---
+
+## Default priors: Non-decision time, bias, and random effects
+
+Extracted via `get_prior()` and configured by `cogmod_priors()`:
+
+::: {style="font-size: 0.75em;"}
+| Parameter / Effect | Target | Default Prior | Scale | Interpretation & Rationale |
+| :--- | :--- | :--- | :---: | :--- |
+| **Non-Decision ($t_0$)** | Intercept | `normal(-1.2, 0.2)` | Log | $\exp(-1.2) \approx 301$ ms; regularizes baseline NDT |
+| | Condition slope ($b$) | `normal(0, 0.2)` | Log | Constrains condition shifts in sensory/motor latency |
+| **Bias ($z/a$)** | Intercept | `logistic(0, 1)` | Logit | Equivalent to $\text{Uniform}(0, 1)$ on probability scale; centered at 0.5 (unbiased) |
+| **Random Effects ($\sigma$)** | `(1 | Participant)`, `(1 | Item)` | `student_t(3, 0, 2.5)` | Bound $\ge 0$ | Standard half-Student-$t$ shrinkage for crossed group SDs |
+:::
+
 
 ---
 
@@ -552,7 +702,7 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 ## Model validation: Posterior predictive check (PPC)
 
 ::: {.columns}
-::: {.column width="40%"}
+::: {.column style="width: 46%; font-size: 0.80em; line-height: 1.25;"}
 ### Validating the DDM with a PPC
 - We simulate 50 replicate datasets ($y^{\text{rep}}$) using the posterior draws.
 - **Thick line:** Empirical observed data.
@@ -561,12 +711,12 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
   - Some conditions are fitted quite well, others deviate somewhat.
   - Maybe the decision to collapse over low and very low frequency was not ideal?
   - Could also switch to the 5-parameter DDM with trial-to-trial variability in drift, bias, and NDT.
-- Generated via standalone script:
-  `workshop_sepex/run_posterior_predictive_check.R`
+- Generated via standalone script:<br>
+  `run_posterior_predictive_check.R`
 :::
 
-::: {.column width="60%"}
-![](images/stimulus_ppc.png){width=100% fig-align="center"}
+::: {.column width="52%"}
+![](images/stimulus_ppc.png){width=100% style="max-height: 520px; object-fit: contain;" fig-align="center"}
 :::
 :::
 
@@ -574,14 +724,16 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ## Do our results match Wagenmakers et al. (2008)?
 
+::: {style="font-size: 0.72em;"}
 | Theoretical Dimension | Wagenmakers et al. (2008) | Our model fit | Match? |
 | :--- | :--- | :--- | :---: |
 | **Speed vs. Accuracy** | Instruction affects boundary separation ($a$) | $a$ increases by **$58\%$** under accuracy instructions ($1.09 \to 1.73$) | **Yes** |
 | **Word Frequency** | Selectively affects drift rate ($\mu$) | High frequency increases drift towards "Word" boundary, boundary separation is unaffected | **Yes** |
 | **Non-Decision Time** | Minor shift across instructions | Baseline NDT $= 332$ ms; small difference associated with instruction ($17$ ms) | **Yes** |
 | **Key Bias** | Neutral starting point | $z = 0.506$ ($95\%$ CrI: $[0.502, 0.511]$) | **Yes** |
+:::
 
-::: {style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 12px; border-radius: 6px; font-size: 0.9em; margin-top: 15px;"}
+::: {style="background: #E8F5E9; border-left: 5px solid #2E7D32; padding: 10px 14px; border-radius: 6px; font-size: 0.75em; margin-top: 15px;"}
   <strong>Conclusion:</strong> Our Bayesian hierarchical model fully reproduces the classic findings while improving upon traditional EZ-diffusion or individual-by-individual fitting by estimating crossed item and participant random effects simultaneously!
 :::
 
@@ -589,12 +741,90 @@ knitr::kable(table_df, align = c("l", "r", "r", "c", "c", "r", "l"))
 
 ## Key takeaways for DDM in practice
 
-::: {style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 18px; border-radius: 6px; font-size: 0.95em;"}
-  **1. Consider using Docker:** Running brms requires a large number of installed packages plus `cmdrstan` for the most efficient sampling. Installing these in Windows or MacOS can take a while. Using a pre-built Docker image with all dependencies is often the easiest solution.<br><br>
-  **2. Think about how to code the responses:** Use response coding ($0 = \text{Nonword}, 1 = \text{Word}$) in 2AFC tasks to ensure balanced boundaries.<br><br>
-  **3. Think carefully about your model:** Start simple (e.g. with the 4-parameter DDM) and only add complexity if the simpler model fails to capture the data. Think about which fixed and random effects are theoretically sensible to include for which parameter.<br><br>
-  **4. Use `cogmod`**: Using `cogmod_ddm()`, `cogmod_priors()`, and `cogmod_inits()`, you can avoid most MCMC failures. Always fit reaction times in **seconds** or the 
-  **5. Expect long runtimes and always save the fitted model:** Fitting a hierarchical DDM with crossed random effects is computationally expensive. Your script should save the fitted model to disk as soon as it is fitted so that you can load it later for analysis.
+::: {style="background: #F4F6F9; border-left: 5px solid #1F497D; padding: 14px 18px; border-radius: 6px; font-size: 0.72em; line-height: 1.3;"}
+<p style="margin-bottom: 8px;"><strong>1. Consider using Docker:</strong> Running <code>brms</code> requires many dependencies plus <code>cmdstanr</code> for efficient sampling. Installing these across OSs can be tedious; a pre-built Docker container guarantees reproducibility and instant setup.</p>
+
+<p style="margin-bottom: 8px;"><strong>2. Response coding vs. error coding:</strong> In 2AFC tasks with high accuracy (~95%), error coding causes severe data sparsity. Response coding ($0 = \text{Nonword}, 1 = \text{Word}$) ensures balanced boundaries and interpretable drift.</p>
+
+<p style="margin-bottom: 8px;"><strong>3. Model architecture:</strong> Start simple (e.g., 4-parameter DDM) before adding complexity. Select fixed and random effects that directly test substantive cognitive hypotheses.</p>
+
+<p style="margin-bottom: 8px;"><strong>4. Use <code>cogmod</code>:</strong> Helpers like <code>cogmod_ddm()</code>, <code>cogmod_priors()</code>, and <code>cogmod_inits()</code> prevent MCMC initialization failures and boundary crashes. Always fit reaction times in <strong>seconds</strong>.</p>
+
+<p style="margin-bottom: 8px;"><strong>5. Contrast coding:</strong> Use Helmert contrasts to map drift parameters directly to cognitive hypotheses (lexical discrimination vs. word frequency sensitivity).</p>
+
+<p style="margin-bottom: 0;"><strong>6. Long runtimes & serialization:</strong> Hierarchical crossed random effects models take hours to sample. Always serialize the fitted model to disk and extract summary objects for instant slide rendering.</p>
+:::
+
+---
+
+## Future directions: Expanding the model
+
+::: {.columns}
+::: {.column style="width: 50%; font-size: 0.72em; line-height: 1.35;"}
+**<span style="color: #1F497D;">1. Weakly informative priors for slopes</span>**
+
+- `cogmod_priors()` returns a full table of defaults (including flat priors on slopes).
+- Use `c(..., replace = TRUE)` to overwrite defaults without duplicate prior errors:
+  ```r
+  # Safely overwrite defaults with regularizing slope priors
+  priors <- c(
+    cogmod_priors(f_ddm, df),
+    prior(normal(0, 1), class = "b"),
+    prior(normal(0, 0.5), class = "b", dpar = "boundary"),
+    replace = TRUE
+  )
+  ```
+
+<br>
+
+**<span style="color: #1F497D;">2. Five-parameter DDM (trial variability)</span>**
+
+- Our model fixed trial variability to 0 (`sigmadrift = 0`, `sigmandt = 0`).
+- Estimating trial-to-trial drift (`sigmadrift ~ 1`) or latency variability (`sigmandt ~ 1`) can resolve the RT tail deviations observed in the PPC.
+:::
+
+::: {.column style="width: 48%; font-size: 0.72em; line-height: 1.35;"}
+**<span style="color: #1F497D;">3. Adding random slopes</span>**
+
+- Current model has crossed random intercepts: `(1 | Participant) + (1 | Item)`.
+- Adding random slopes—e.g. `(1 + Condition | Participant)`—allows individual differences in speed-accuracy tradeoff caution.
+
+::: {style="background: #FFF3CD; border-left: 5px solid #E65100; padding: 12px 14px; border-radius: 6px; margin-top: 16px;"}
+<strong style="color: #B73E00;">The challenge: Model complexity</strong>
+
+- **Runtime increases:** Crossed random intercepts took ~2.6 hours. Adding random slopes and trial variability may push runtimes to 24+ hours or days.
+- **MCMC geometry:** Correlated random effects and trial-level variance parameters create steep posterior curvature (funnels, divergent transitions).
+- **Pragmatic modeling:** Always start simple with 4 parameters and random intercepts; only add complexity if justified by PPCs and specific cognitive hypotheses.
+:::
+:::
+:::
+
+---
+
+## Presentation and repository {.dark-bg background-color="#1F497D"}
+
+::: {.nonincremental}
+::: {.columns}
+::: {.column style="width: 50%; text-align: center;"}
+### Online slides
+
+![](images/qr_presentation.png){width="240" height="240" style="background: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"}
+
+<p style="margin-top: 15px; font-size: 0.75em;">
+<a href="https://bernhardangele.github.io/sepex_ddm_workshop_2026/" target="_blank" style="color: #EEECE1; font-weight: bold; text-decoration: underline; word-break: break-all;">bernhardangele.github.io/sepex_ddm_workshop_2026/</a>
+</p>
+:::
+
+::: {.column style="width: 50%; text-align: center;"}
+### GitHub repository
+
+![](images/qr_repository.png){width="240" height="240" style="background: white; padding: 10px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"}
+
+<p style="margin-top: 15px; font-size: 0.75em;">
+<a href="https://github.com/bernhardangele/sepex_ddm_workshop_2026" target="_blank" style="color: #EEECE1; font-weight: bold; text-decoration: underline; word-break: break-all;">github.com/bernhardangele/sepex_ddm_workshop_2026</a>
+</p>
+:::
+:::
 :::
 
 ---

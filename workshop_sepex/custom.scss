@@ -81,6 +81,27 @@ $progress-color: $brand-red !default;
     padding: 0.1em 0.3em;
     color: $brand-red;
     font-size: 0.9em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  // Column layout fixes for Reveal.js
+  .columns {
+    display: flex !important;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+
+    &.valign-center {
+      align-items: center;
+    }
+  }
+
+  .column {
+    display: block !important;
+    box-sizing: border-box;
+    min-width: 0; // Prevent flex blowout from wide content
   }
 
   // Code blocks (pre)

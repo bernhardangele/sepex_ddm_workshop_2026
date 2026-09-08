@@ -550,6 +550,7 @@ Extracted via `get_prior()` and configured by `cogmod_priors()`:
 
 ## Code walkthrough: MCMC sampling and serialization
 
+::: {style="font-size: 0.68em; line-height: 1.35;"}
 ```r
 model_ddm <- brm(
   formula    = f_ddm,
@@ -570,11 +571,13 @@ model_ddm <- brm(
 qs2::qs_save(model_ddm, here::here("models", "ddm_cogmod_stimulus_coding_model.qs"))
 ```
 
-### Explanation:
+<p style="font-weight: bold; color: #1F497D; margin-top: 10px; margin-bottom: 4px; font-size: 1.1em;">Explanation:</p>
+
 - **`threads = threading(2)`:** If you have sufficient cores, you can speed up sampling a bit by using in-chain parallelization (here: using 2 cores per chain for a total of 8 cores).
 - **`adapt_delta = 0.95`:** Start with low adapt delta (.8) and increase if you see divergent transitions. In this case, there were a few divergent transitions at .8, but none at .95.
 - **`max_treedepth = 12`:** Increase if you see warnings about hitting the maximum tree depth (default is 10). Probably unnecessary here, but it doesn't hurt to increase it.
 - **`qs2::qs_save()`:** This package is faster and produces smaller files than `saveRDS()`.
+:::
 
 ---
 

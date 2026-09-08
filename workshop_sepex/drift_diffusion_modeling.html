@@ -803,6 +803,7 @@ Accessible on smartphones, tablets, and laptops
 </section>
 <section id="code-walkthrough-mcmc-sampling-and-serialization" class="slide level2">
 <h2>Code walkthrough: MCMC sampling and serialization</h2>
+<div style="font-size: 0.68em; line-height: 1.35;">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>model_ddm <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
 <span id="cb11-2"><a href=""></a>  <span class="at">formula    =</span> f_ddm,</span>
 <span id="cb11-3"><a href=""></a>  <span class="at">data       =</span> df,</span>
@@ -820,13 +821,16 @@ Accessible on smartphones, tablets, and laptops
 <span id="cb11-15"><a href=""></a>)</span>
 <span id="cb11-16"><a href=""></a></span>
 <span id="cb11-17"><a href=""></a>qs2<span class="sc">::</span><span class="fu">qs_save</span>(model_ddm, here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"models"</span>, <span class="st">"ddm_cogmod_stimulus_coding_model.qs"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<h3 id="explanation-3">Explanation:</h3>
+<p style="font-weight: bold; color: #1F497D; margin-top: 10px; margin-bottom: 4px; font-size: 1.1em;">
+Explanation:
+</p>
 <ul>
 <li class="fragment"><strong><code>threads = threading(2)</code>:</strong> If you have sufficient cores, you can speed up sampling a bit by using in-chain parallelization (here: using 2 cores per chain for a total of 8 cores).</li>
 <li class="fragment"><strong><code>adapt_delta = 0.95</code>:</strong> Start with low adapt delta (.8) and increase if you see divergent transitions. In this case, there were a few divergent transitions at .8, but none at .95.</li>
 <li class="fragment"><strong><code>max_treedepth = 12</code>:</strong> Increase if you see warnings about hitting the maximum tree depth (default is 10). Probably unnecessary here, but it doesn’t hurt to increase it.</li>
 <li class="fragment"><strong><code>qs2::qs_save()</code>:</strong> This package is faster and produces smaller files than <code>saveRDS()</code>.</li>
 </ul>
+</div>
 </section>
 <section id="reading-and-interpreting-model-results" class="slide level2">
 <h2>Reading and interpreting model results</h2>
@@ -1164,7 +1168,7 @@ Accessible on smartphones, tablets, and laptops
 <div style="background: #FFF3CD; border-left: 5px solid #E65100; padding: 12px 14px; border-radius: 6px; margin-top: 16px;">
 <p><strong style="color: #B73E00;">The challenge: Model complexity</strong></p>
 <ul>
-<li class="fragment"><strong>Runtime explosion:</strong> Crossed random intercepts took ~2.6 hours. Adding random slopes and trial variability can push runtimes to 24+ hours or days.</li>
+<li class="fragment"><strong>Runtime increases:</strong> Crossed random intercepts took ~2.6 hours. Adding random slopes and trial variability may push runtimes to 24+ hours or days.</li>
 <li class="fragment"><strong>MCMC geometry:</strong> Correlated random effects and trial-level variance parameters create steep posterior curvature (funnels, divergent transitions).</li>
 <li class="fragment"><strong>Pragmatic modeling:</strong> Always start simple with 4 parameters and random intercepts; only add complexity if justified by PPCs and specific cognitive hypotheses.</li>
 </ul>
